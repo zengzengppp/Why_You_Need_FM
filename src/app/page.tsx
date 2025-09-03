@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
 
 // Comprehensive console message suppression
 if (typeof window !== 'undefined') {
@@ -401,60 +402,6 @@ The choice is simple: become a platform researcher or a market leader.`
   };
 
   // Enhanced markdown processor for robust LLM output handling
-  const processMarkdown = (text: string) => {
-    if (!text) return '';
-    
-    // Step 1: Normalize whitespace and line endings
-    let processed = text
-      .replace(/\r\n/g, '\n')  // Normalize line endings
-      .replace(/\r/g, '\n')    // Handle old Mac line endings
-      .trim();
-    
-    // Step 2: Handle titles - strip markdown but preserve text
-    processed = processed
-      .replace(/^#{1,6}\s*(.+)$/gm, '$1')  // Remove ## ### etc. but keep title text (space optional)
-      .replace(/^(.+)\n={3,}$/gm, '$1')    // Handle underline-style titles
-      .replace(/^(.+)\n-{3,}$/gm, '$1');   // Handle dash underline titles
-    
-    // Step 3: Process bullet points - handle multiple formats
-    // First, normalize all bullet types to a consistent format
-    processed = processed
-      .replace(/^\s*[*•\-]\s*(.+)$/gm, '|||BULLET|||$1')  // Mark all bullets (space optional)
-      .replace(/^\s*\d+\.\s*(.+)$/gm, '|||NUMBULLET|||$1'); // Mark numbered lists (space optional)
-    
-    // Step 4: Convert **text** to <strong>text</strong>
-    processed = processed
-      .replace(/\*\*(.*?)\*\*/g, '<strong className="font-semibold text-brand-pumpkin">$1</strong>');
-    
-    // Step 5: Handle line breaks before list processing
-    processed = processed
-      .replace(/\n\n+/g, '|||PARAGRAPH|||')  // Mark paragraph breaks
-      .replace(/\n/g, ' ');  // Convert single line breaks to spaces
-    
-    // Step 6: Process bullet lists
-    // Replace bullet markers with list items
-    processed = processed
-      .replace(/\|\|\|BULLET\|\|\|([^|]+?)(?=\|\|\|BULLET\|\|\||$)/g, '<li>$1</li>')
-      .replace(/\|\|\|NUMBULLET\|\|\|([^|]+?)(?=\|\|\|NUMBULLET\|\|\||$)/g, '<li>$1</li>');
-    
-    // Step 7: Group consecutive list items into <ul> tags
-    processed = processed
-      .replace(/(<li>.*?<\/li>)(\s*<li>.*?<\/li>)*/gs, (match) => {
-        return `<ul className="list-disc list-inside space-y-1 my-2">${match}</ul>`;
-      });
-    
-    // Step 8: Restore paragraph breaks
-    processed = processed
-      .replace(/\|\|\|PARAGRAPH\|\|\|/g, '<br><br>');
-    
-    // Step 9: Clean up any remaining markers and extra spaces
-    processed = processed
-      .replace(/\|\|\|[A-Z]+\|\|\|/g, '')  // Remove any remaining markers
-      .replace(/\s+/g, ' ')  // Normalize spaces
-      .trim();
-    
-    return processed;
-  };
 
   // Show mock report
   const showMockReport = useCallback(() => {
@@ -934,7 +881,7 @@ The choice is simple: become a platform researcher or a market leader.`
                       </h2>
                       <div className="text-lg md:text-xl leading-relaxed space-y-4">
                         {ceremonyParagraphs[ceremonyStep].content.map((p, idx) => (
-                        <p 
+                        <div 
                           key={idx} 
                           className={`mb-4 transition-all duration-500 ${
                             ceremonyAnimation.fadingOut ? 'opacity-0 translate-y-[-20px]' :
@@ -942,10 +889,20 @@ The choice is simple: become a platform researcher or a market leader.`
                               ? 'opacity-100 translate-y-0' 
                               : 'opacity-0 translate-y-4'
                           }`}
-                          dangerouslySetInnerHTML={{
-                            __html: p.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-brand-sandy">$1</strong>')
-                          }} 
-                        />
+                        >
+                          <ReactMarkdown
+                            components={{
+                              strong: ({ children }) => <strong className="font-semibold text-brand-sandy">{children}</strong>,
+                              ul: ({ children }) => <ul className="list-disc list-inside space-y-1 my-3">{children}</ul>,
+                              ol: ({ children }) => <ol className="list-decimal list-inside space-y-1 my-3">{children}</ol>,
+                              li: ({ children }) => <li className="text-white">{children}</li>,
+                              p: ({ children }) => <p className="mb-3 text-white leading-relaxed">{children}</p>,
+                              blockquote: ({ children }) => <blockquote className="border-l-4 border-brand-sandy pl-4 italic text-white my-4">{children}</blockquote>
+                            }}
+                          >
+                            {p}
+                          </ReactMarkdown>
+                        </div>
                         ))}
                       </div>
                     </div>
@@ -988,11 +945,21 @@ The choice is simple: become a platform researcher or a market leader.`
                     const borderColors = ['border-brand-sandy', 'border-brand-pumpkin', 'border-brand-sandy', 'border-brand-pumpkin'];
                     
                     return reportSections.map((section, index) => (
-                      <section key={index} className={`pl-4 border-l-4 ${borderColors[index] || 'border-brand-sandy'}`}>
-                        <h2 className="text-xl font-semibold text-brand-text mb-3">{section.title.replace(/^#{1,6}\s*/, '')}</h2>
-                        <div className="text-brand-text leading-relaxed" 
-                             dangerouslySetInnerHTML={{ __html: processMarkdown(Array.isArray(section.content) ? section.content.join('\n\n') : section.content) }} />
-                      </section>
+                      <div key={index}>
+                        <section className={`pl-4 border-l-4 ${borderColors[index] || 'border-brand-sandy'}`}>
+                          <h2 className="text-xl font-semibold text-brand-text mb-3">{section.title.replace(/^#{1,6}\s*/, '')}</h2>
+                          <div className="prose max-w-none text-brand-text
+                            prose-strong:text-brand-pumpkin prose-strong:font-semibold
+                            prose-ul:space-y-1 prose-ol:space-y-1
+                            prose-li:text-brand-text prose-p:text-brand-text prose-p:leading-relaxed
+                            prose-blockquote:border-l-brand-pumpkin prose-blockquote:text-brand-text
+                            prose-hr:border-brand-text prose-hr:my-8">
+                            <ReactMarkdown>
+                              {(Array.isArray(section.content) ? section.content.join('\n\n') : section.content) + (index < reportSections.length - 1 ? '\n\n---' : '')}
+                            </ReactMarkdown>
+                          </div>
+                        </section>
+                      </div>
                     ));
                   })()}
                 </div>

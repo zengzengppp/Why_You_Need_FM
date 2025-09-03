@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@plugin "@tailwindcss/typography";
 
 /* Hide Next.js development overlays and React DevTools alerts - AGGRESSIVE */
 button[aria-label*="Next.js"],
