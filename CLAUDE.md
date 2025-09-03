@@ -1,0 +1,1 @@
+- if the project is alr running on localhost:3003, the future updated version should always run on it. No open new port.
