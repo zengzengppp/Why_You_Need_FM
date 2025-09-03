@@ -17,6 +17,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // TEMPORARILY DISABLED LLM CONNECTION FOR UI TESTING
+    // TODO: Re-enable after UI refinement is complete
+    
+    /* LLM CODE - DISABLED FOR UI TESTING
     // Read knowledge base files
     const salesCasesPath = path.join(process.cwd(), 'Sales_Cases_Json.txt');
     const marketingPath = path.join(process.cwd(), 'Marketing_Json.txt');
@@ -57,6 +61,25 @@ Please analyze this company and provide your two-stage output as specified in th
     const sections = parseGeminiResponse(text);
     
     return NextResponse.json({ sections });
+    */
+
+    // USE HARDCODED OUTPUT FROM Example_Output.txt FOR UI TESTING
+    // This simulates realistic LLM output with imperfect markdown formatting
+    const hardcodedOutput = {
+      "section1_title": "## Your Shelf is a Promise",
+      "section1_content": "Aesop isn't just skincare. It's an ethos of calm, intelligent design in a chaotic world. But that promise, made in your meticulously crafted stores, is broken when a product isn't on the shelf. The **volatility and uncertainty (VUCA)** that buffet the global market are a direct threat to your brand's tranquil presence. You face the same complex, global challenges as the world's beauty leaders. Your supply chain cannot be an afterthought; it must be as **intentionally designed as your formulations**.",
+      "section2_title": "## The L'Oréal Precedent",
+      "section2_content": "L'Oréal, the **world's #1 cosmetics group**, operates in this same volatile world. Their goal was simple and audacious: achieve **increasing performance and customer service** across a massive global footprint. For over **20 years**, they have relied on FuturMaster as their core Demand Planning solution. We didn't just sell them software; we built a partnership that now supports **80 countries and 3,250 users**. We empower them to generate the **most accurate sell-in sales forecast possible**, turning market chaos into a clear, actionable vision.",
+      "section3_title": "## From Meticulous Design to Market Dominance", 
+      "section3_content": "This isn't about buying a better spreadsheet. This is about installing a command center. The **FuturMaster Bloom platform** is designed for one purpose: to **unleash complexity and turn it into your competitive advantage**.\n\n* **BLOOM Demand Planning**: Thrives in a VUCA world, leveraging **advanced algorithms and Forecast at Scale technology** to create demand plans that are not just accurate, but responsive.\n* **Expertise, Not Experiments**: We are a **supply chain expert company**. Our solutions have decades of best practices from the beauty industry already built-in.\n* **Your Focus**: Your team's valuable time should be spent **winning the market, not experimenting in an academic sandbox**.",
+      "section4_title": "## Researcher, Builder, or Leader?",
+      "section4_content": "You have a choice. You can listen to vendors like **o9 Solutions**, who will sell you an empty 'Digital Brain' and ask you to spend years on an **'expensive academic research project'** to train it. Or you can talk to **Anaplan**, who will hand you a box of 'top-tier bricks' and call it flexibility. We call it **'buck-passing'**—leaving you to do the hard work of an architect and builder.\n\nFuturMaster offers a third option. We don't give you a research project or a box of parts. We hand you the keys to a **'sturdy castle designed and built by experts'**. The choice is simple: Do you want to be a researcher, a builder, or the leader of a global brand? We think the answer is obvious."
+    };
+
+    // Parse using existing parser function to maintain compatibility
+    const sections = parseGeminiResponse(JSON.stringify(hardcodedOutput));
+    
+    return NextResponse.json({ sections });
 
   } catch (error) {
     console.error('Error generating content:', error);
@@ -67,7 +90,7 @@ Please analyze this company and provide your two-stage output as specified in th
         title: "Your Forecasts Are Guessing",
         content: `In today's beauty market, volatility isn't a temporary disruption; it's the new climate. You are striving to **share a realistic and feasible vision of future turnover** in a world defined by volatility and shifting consumer behavior.
 
-Relying on old tools for this is like navigating a storm with a paper map. For a company like you, where customer service is paramount, guessing isn't an option. You need to stop reacting and start anticipating.`
+Relying on old tools for this is like navigating a storm with a paper map. For companies where customer service is paramount, guessing isn't an option. You need to stop reacting and start anticipating.`
       },
       {
         title: "From Chaos to Clarity", 

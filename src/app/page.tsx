@@ -400,18 +400,60 @@ FuturMaster is different. We are **supply chain experts**. We don't hand you a r
 The choice is simple: become a platform researcher or a market leader.`
   };
 
-  // Process markdown
+  // Enhanced markdown processor for robust LLM output handling
   const processMarkdown = (text: string) => {
-    return text
-      // Convert **text** to <strong>text</strong>
-      .replace(/\*\*(.*?)\*\*/g, '<strong className="font-semibold text-brand-pumpkin">$1</strong>')
-      // Convert * bullet points to HTML list items
-      .replace(/^• (.*$)/gim, '<li>$1</li>')
-      // Wrap consecutive list items in <ul> tags
-      .replace(/(<li>.*<\/li>)/gs, '<ul className="list-disc list-inside space-y-1">$1</ul>')
-      // Convert line breaks to <br> tags
-      .replace(/\n\n/g, '<br><br>')
-      .replace(/\n/g, '<br>');
+    if (!text) return '';
+    
+    // Step 1: Normalize whitespace and line endings
+    let processed = text
+      .replace(/\r\n/g, '\n')  // Normalize line endings
+      .replace(/\r/g, '\n')    // Handle old Mac line endings
+      .trim();
+    
+    // Step 2: Handle titles - strip markdown but preserve text
+    processed = processed
+      .replace(/^#{1,6}\s*(.+)$/gm, '$1')  // Remove ## ### etc. but keep title text (space optional)
+      .replace(/^(.+)\n={3,}$/gm, '$1')    // Handle underline-style titles
+      .replace(/^(.+)\n-{3,}$/gm, '$1');   // Handle dash underline titles
+    
+    // Step 3: Process bullet points - handle multiple formats
+    // First, normalize all bullet types to a consistent format
+    processed = processed
+      .replace(/^\s*[*•\-]\s*(.+)$/gm, '|||BULLET|||$1')  // Mark all bullets (space optional)
+      .replace(/^\s*\d+\.\s*(.+)$/gm, '|||NUMBULLET|||$1'); // Mark numbered lists (space optional)
+    
+    // Step 4: Convert **text** to <strong>text</strong>
+    processed = processed
+      .replace(/\*\*(.*?)\*\*/g, '<strong className="font-semibold text-brand-pumpkin">$1</strong>');
+    
+    // Step 5: Handle line breaks before list processing
+    processed = processed
+      .replace(/\n\n+/g, '|||PARAGRAPH|||')  // Mark paragraph breaks
+      .replace(/\n/g, ' ');  // Convert single line breaks to spaces
+    
+    // Step 6: Process bullet lists
+    // Replace bullet markers with list items
+    processed = processed
+      .replace(/\|\|\|BULLET\|\|\|([^|]+?)(?=\|\|\|BULLET\|\|\||$)/g, '<li>$1</li>')
+      .replace(/\|\|\|NUMBULLET\|\|\|([^|]+?)(?=\|\|\|NUMBULLET\|\|\||$)/g, '<li>$1</li>');
+    
+    // Step 7: Group consecutive list items into <ul> tags
+    processed = processed
+      .replace(/(<li>.*?<\/li>)(\s*<li>.*?<\/li>)*/gs, (match) => {
+        return `<ul className="list-disc list-inside space-y-1 my-2">${match}</ul>`;
+      });
+    
+    // Step 8: Restore paragraph breaks
+    processed = processed
+      .replace(/\|\|\|PARAGRAPH\|\|\|/g, '<br><br>');
+    
+    // Step 9: Clean up any remaining markers and extra spaces
+    processed = processed
+      .replace(/\|\|\|[A-Z]+\|\|\|/g, '')  // Remove any remaining markers
+      .replace(/\s+/g, ' ')  // Normalize spaces
+      .trim();
+    
+    return processed;
   };
 
   // Show mock report
@@ -888,7 +930,7 @@ The choice is simple: become a platform researcher or a market leader.`
                           fontFamily: 'Artifika, serif', 
                           color: ceremonyStep % 2 === 0 ? '#f79d5c' : '#f3752b' 
                         }}>
-                        {ceremonyParagraphs[ceremonyStep].title}
+                        {ceremonyParagraphs[ceremonyStep].title.replace(/^#{1,6}\s*/, '')}
                       </h2>
                       <div className="text-lg md:text-xl leading-relaxed space-y-4">
                         {ceremonyParagraphs[ceremonyStep].content.map((p, idx) => (
@@ -947,7 +989,7 @@ The choice is simple: become a platform researcher or a market leader.`
                     
                     return reportSections.map((section, index) => (
                       <section key={index} className={`pl-4 border-l-4 ${borderColors[index] || 'border-brand-sandy'}`}>
-                        <h2 className="text-xl font-semibold text-brand-text mb-3">{section.title}</h2>
+                        <h2 className="text-xl font-semibold text-brand-text mb-3">{section.title.replace(/^#{1,6}\s*/, '')}</h2>
                         <div className="text-brand-text leading-relaxed" 
                              dangerouslySetInnerHTML={{ __html: processMarkdown(Array.isArray(section.content) ? section.content.join('\n\n') : section.content) }} />
                       </section>
