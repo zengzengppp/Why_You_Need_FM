@@ -64,6 +64,11 @@ export default function Home() {
     activeTimers: [] as NodeJS.Timeout[]
   });
 
+  // LLM API state
+  const [generatedSections, setGeneratedSections] = useState<any[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [apiError, setApiError] = useState(false);
+
   // Refs
   const companyNameInputRef = useRef<HTMLInputElement>(null);
   const activeTimersRef = useRef<NodeJS.Timeout[]>([]);
@@ -238,45 +243,62 @@ export default function Home() {
     animateCodeThinking();
   }, [animateCities, animateIndustries, animateCodeThinking, addTimer]);
 
-  // Ceremony paragraphs
-  const ceremonyParagraphs = [
-    {
-      title: "Your Forecasts Are Guessing",
-      content: [
-        `In today's beauty market, volatility isn't a temporary disruption; it's the new climate. You are striving to **share a realistic and feasible vision of future turnover** in a world defined by volatility and shifting consumer behavior.`,
-        `Relying on old tools for this is like navigating a storm with a paper map. For a premium brand like Aesop, where customer service is paramount, guessing isn't an option. You need to stop reacting and start anticipating.`
-      ]
-    },
-    {
-      title: "From Chaos to Clarity",
-      content: [
-        `We don't sell software; we deliver a competitive advantage designed for a **VUCA world**. Our **BLOOM DEMAND PLANNING** module was built to turn your complexity into a strength.`,
-        `It's not about more spreadsheets. It's about intelligence.`,
-        `• Leverage **Forecast at Scale technology** to process massive amounts of internal and external data for accurate, responsive demand plans.`,
-        `• Benefit from **advanced algorithms, event detection, and exception management** to see the future with unprecedented clarity.`
-      ]
-    },
-    {
-      title: "How The World Leader Leads",
-      content: [
-        `This isn't theory. This is how the **#1 cosmetics group worldwide**, L'Oréal, navigates volatility. For **over 20 years**, they have trusted FuturMaster to be their core Demand Planning solution.`,
-        `Their goal was simple: provide the **most accurate sell-in sales forecast** possible. Today, our platform is deployed in **80 countries**, supporting **3,250 users** who rely on it to maintain performance and customer service. The best in the world don't settle for second-best tools.`
-      ]
-    },
-    {
-      title: "Researcher or Market Leader?",
-      content: [
-        `Some competitors, like o9 Solutions, will offer you a "Digital Brain"—a grand, theoretical platform that you must spend years "training" with a team of data scientists. It's an **expensive academic research project**, not a solution.`,
-        `We think that's insane. Your time should be spent **winning the market, not experimenting in an academic sandbox**.`,
-        `We give you an **out-of-the-box 'Swiss Army knife'**, sharpened by decades of expertise. The choice is simple: do you want to be a platform researcher or a market leader?`
-      ]
+  // Get ceremony paragraphs - dynamic based on generated content or fallback
+  const getCeremonyParagraphs = useCallback(() => {
+    if (generatedSections.length >= 4) {
+      // Use generated content, split content into paragraphs
+      return generatedSections.map(section => ({
+        title: section.title,
+        content: typeof section.content === 'string' 
+          ? section.content.split('\n\n').filter(p => p.trim())
+          : Array.isArray(section.content) 
+            ? section.content.filter(p => p.trim())
+            : [section.content]
+      }));
     }
-  ];
+    
+    // Fallback paragraphs with dynamic company name
+    const companyName = appState.companyName || 'your company';
+    return [
+      {
+        title: "Your Forecasts Are Guessing",
+        content: [
+          `In today's market, volatility isn't a temporary disruption; it's the new climate. ${companyName} is striving to **share a realistic and feasible vision of future turnover** in a world defined by volatility and shifting consumer behavior.`,
+          `Relying on old tools for this is like navigating a storm with a paper map. For a company like ${companyName}, where customer service is paramount, guessing isn't an option. You need to stop reacting and start anticipating.`
+        ]
+      },
+      {
+        title: "From Chaos to Clarity",
+        content: [
+          `We don't sell software; we deliver a competitive advantage designed for a **VUCA world**. Our **BLOOM DEMAND PLANNING** module was built to turn your complexity into a strength.`,
+          `It's not about more spreadsheets. It's about intelligence.`,
+          `• Leverage **Forecast at Scale technology** to process massive amounts of internal and external data for accurate, responsive demand plans.`,
+          `• Benefit from **advanced algorithms, event detection, and exception management** to see the future with unprecedented clarity.`
+        ]
+      },
+      {
+        title: "How The World Leader Leads",
+        content: [
+          `This isn't theory. This is how the **#1 cosmetics group worldwide**, L'Oréal, navigates volatility. For **over 20 years**, they have trusted FuturMaster to be their core Demand Planning solution.`,
+          `Their goal was simple: provide the **most accurate sell-in sales forecast** possible. Today, our platform is deployed in **80 countries**, supporting **3,250 users** who rely on it to maintain performance and customer service. The best in the world don't settle for second-best tools.`
+        ]
+      },
+      {
+        title: "Researcher or Market Leader?",
+        content: [
+          `Some competitors, like **o9 Solutions**, will offer you a "Digital Brain"—a grand, theoretical platform that you must spend years "training" with a team of data scientists. It's an **expensive academic research project**, not a solution.`,
+          `We think that's insane. Your time should be spent **winning the market, not experimenting in an academic sandbox**.`,
+          `We give you an **out-of-the-box 'Swiss Army knife'**, sharpened by decades of expertise. The choice is simple: do you want to be a platform researcher or a market leader?`
+        ]
+      }
+    ];
+  }, [generatedSections, appState.companyName]);
 
   // Ceremony sequence
   const startCeremony = useCallback(() => {
     showStage('ceremony');
     
+    const ceremonyParagraphs = getCeremonyParagraphs();
     const ceremonySequence = [
       ...ceremonyParagraphs.map((paragraph, index) => ({
         duration: 3000, // Restored to original 3000ms timing
@@ -352,7 +374,7 @@ export default function Home() {
     };
     
     executeStep();
-  }, [ceremonyParagraphs, addTimer, showStage]);
+  }, [getCeremonyParagraphs, addTimer, showStage]);
 
   // Mock report data
   const mockReport = {
@@ -380,8 +402,16 @@ The choice is simple: become a platform researcher or a market leader.`
 
   // Process markdown
   const processMarkdown = (text: string) => {
-    // Convert **text** to <strong>text</strong>
-    return text.replace(/\*\*(.*?)\*\*/g, '<strong className="font-semibold text-brand-pumpkin">$1</strong>');
+    return text
+      // Convert **text** to <strong>text</strong>
+      .replace(/\*\*(.*?)\*\*/g, '<strong className="font-semibold text-brand-pumpkin">$1</strong>')
+      // Convert * bullet points to HTML list items
+      .replace(/^• (.*$)/gim, '<li>$1</li>')
+      // Wrap consecutive list items in <ul> tags
+      .replace(/(<li>.*<\/li>)/gs, '<ul className="list-disc list-inside space-y-1">$1</ul>')
+      // Convert line breaks to <br> tags
+      .replace(/\n\n/g, '<br><br>')
+      .replace(/\n/g, '<br>');
   };
 
   // Show mock report
@@ -402,8 +432,8 @@ The choice is simple: become a platform researcher or a market leader.`
     }, 2200); // Restored to original
   }, [showStage, addTimer]);
 
-  // Generate report
-  const generateReport = useCallback(() => {
+  // Generate report with LLM API call
+  const generateReport = useCallback(async () => {
     const companyName = companyNameInputRef.current?.value.trim();
     
     if (!companyName) {
@@ -412,12 +442,45 @@ The choice is simple: become a platform researcher or a market leader.`
     }
     
     setAppState(prev => ({ ...prev, companyName }));
+    setIsGenerating(true);
+    setApiError(false);
     showStage('thinking');
     
+    // Start the thinking animation
     addTimer(() => {
       animateThinkingSteps();
     }, 500);
+
+    // Call the API during the thinking phase
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ companyName }),
+      });
+
+      if (!response.ok) {
+        throw new Error('API call failed');
+      }
+
+      const data = await response.json();
+      setGeneratedSections(data.sections);
+      
+      if (data.fallback) {
+        setApiError(true);
+      }
+    } catch (error) {
+      console.error('Error calling API:', error);
+      setApiError(true);
+      // Set fallback data - will use mockReport
+      setGeneratedSections([]);
+    }
+
+    setIsGenerating(false);
     
+    // Start ceremony after thinking completes
     addTimer(() => {
       startCeremony();
     }, 5500); // Keep ceremony start timing the same
@@ -452,6 +515,9 @@ The choice is simple: become a platform researcher or a market leader.`
       backgroundTransition: false,
       fadingOut: false
     });
+    setGeneratedSections([]);
+    setIsGenerating(false);
+    setApiError(false);
   }, [clearAllTimers]);
 
   // Handle key press
@@ -804,26 +870,28 @@ The choice is simple: become a platform researcher or a market leader.`
               }`}
               style={{ 
                 background: ceremonyAnimation.backgroundTransition ? '#000000' :
-                  ceremonyStep < ceremonyParagraphs.length 
+                  ceremonyStep < getCeremonyParagraphs().length 
                     ? (ceremonyStep % 2 === 0 ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)' : 'linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%)')
                     : '#000000'
               }}>
               <div className="text-center max-w-4xl mx-auto px-6">
-                {ceremonyStep < ceremonyParagraphs.length && (
-                  <div className="text-white max-w-3xl mx-auto">
-                    <h2 
-                      className={`text-4xl md:text-5xl font-bold mb-8 text-center transition-all duration-500 ${
-                        ceremonyAnimation.fadingOut ? 'opacity-0 translate-y-[-20px]' :
-                        ceremonyAnimation.titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-                      }`}
-                      style={{ 
-                        fontFamily: 'Artifika, serif', 
-                        color: ceremonyStep % 2 === 0 ? '#f79d5c' : '#f3752b' 
-                      }}>
-                      {ceremonyParagraphs[ceremonyStep].title}
-                    </h2>
-                    <div className="text-lg md:text-xl leading-relaxed space-y-4">
-                      {ceremonyParagraphs[ceremonyStep].content.map((p, idx) => (
+                {(() => {
+                  const ceremonyParagraphs = getCeremonyParagraphs();
+                  return ceremonyStep < ceremonyParagraphs.length && (
+                    <div className="text-white max-w-3xl mx-auto">
+                      <h2 
+                        className={`text-4xl md:text-5xl font-bold mb-8 text-center transition-all duration-500 ${
+                          ceremonyAnimation.fadingOut ? 'opacity-0 translate-y-[-20px]' :
+                          ceremonyAnimation.titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                        }`}
+                        style={{ 
+                          fontFamily: 'Artifika, serif', 
+                          color: ceremonyStep % 2 === 0 ? '#f79d5c' : '#f3752b' 
+                        }}>
+                        {ceremonyParagraphs[ceremonyStep].title}
+                      </h2>
+                      <div className="text-lg md:text-xl leading-relaxed space-y-4">
+                        {ceremonyParagraphs[ceremonyStep].content.map((p, idx) => (
                         <p 
                           key={idx} 
                           className={`mb-4 transition-all duration-500 ${
@@ -836,10 +904,11 @@ The choice is simple: become a platform researcher or a market leader.`
                             __html: p.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-brand-sandy">$1</strong>')
                           }} 
                         />
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
             </div>
           )}
@@ -872,33 +941,18 @@ The choice is simple: become a platform researcher or a market leader.`
                 <div className={`space-y-8 transition-opacity duration-1000 ${
                   reportTitlePosition === 'final' ? 'opacity-100' : 'opacity-0'
                 }`}>
-                  {/* Hook Section */}
-                  <section className="pl-4 border-l-4 border-brand-sandy">
-                    <h2 className="text-xl font-semibold text-brand-text mb-3">Beyond the Bottle</h2>
-                    <div className="text-brand-text leading-relaxed" 
-                         dangerouslySetInnerHTML={{ __html: processMarkdown(mockReport.hook) }} />
-                  </section>
-                  
-                  {/* Parable Section */}
-                  <section className="pl-4 border-l-4 border-brand-pumpkin">
-                    <h2 className="text-xl font-semibold text-brand-text mb-3">The Beauty Titan</h2>
-                    <div className="text-brand-text leading-relaxed" 
-                         dangerouslySetInnerHTML={{ __html: processMarkdown(mockReport.parable) }} />
-                  </section>
-                  
-                  {/* Solution Section */}
-                  <section className="pl-4 border-l-4 border-brand-sandy">
-                    <h2 className="text-xl font-semibold text-brand-text mb-3">Your Crystal Ball</h2>
-                    <div className="text-brand-text leading-relaxed" 
-                         dangerouslySetInnerHTML={{ __html: processMarkdown(mockReport.solution) }} />
-                  </section>
-                  
-                  {/* Decision Section */}
-                  <section className="pl-4 border-l-4 border-brand-pumpkin">
-                    <h2 className="text-xl font-semibold text-brand-text mb-3">Leader or Laborer?</h2>
-                    <div className="text-brand-text leading-relaxed" 
-                         dangerouslySetInnerHTML={{ __html: processMarkdown(mockReport.decision) }} />
-                  </section>
+                  {(() => {
+                    const reportSections = getCeremonyParagraphs();
+                    const borderColors = ['border-brand-sandy', 'border-brand-pumpkin', 'border-brand-sandy', 'border-brand-pumpkin'];
+                    
+                    return reportSections.map((section, index) => (
+                      <section key={index} className={`pl-4 border-l-4 ${borderColors[index] || 'border-brand-sandy'}`}>
+                        <h2 className="text-xl font-semibold text-brand-text mb-3">{section.title}</h2>
+                        <div className="text-brand-text leading-relaxed" 
+                             dangerouslySetInnerHTML={{ __html: processMarkdown(Array.isArray(section.content) ? section.content.join('\n\n') : section.content) }} />
+                      </section>
+                    ));
+                  })()}
                 </div>
                 
                 {/* CTA Buttons */}

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Complete Gemini Pipeline</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        input, button { padding: 10px; margin: 10px 0; }
+        input { width: 200px; }
+        button { background: #007cba; color: white; border: none; cursor: pointer; }
+        button:hover { background: #005a87; }
+        .loading { color: #666; }
+        .result { margin: 20px 0; padding: 20px; border: 1px solid #ccc; background: #f9f9f9; }
+        .error { color: red; background: #ffe6e6; }
+        .success { color: green; background: #e6ffe6; }
+        .raw-response { max-height: 300px; overflow-y: auto; background: #f0f0f0; padding: 10px; font-family: monospace; white-space: pre-wrap; }
+        .sections { margin-top: 20px; }
+        .section { margin: 15px 0; padding: 15px; border-left: 4px solid #007cba; background: white; }
+        .section h3 { margin: 0 0 10px 0; color: #333; }
+        .section p { margin: 0; line-height: 1.5; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test Complete Gemini Pipeline</h1>
+        
+        <div>
+            <input type="text" id="companyName" placeholder="Enter company name" value="Apple">
+            <button onclick="testComplete()">Test Complete Pipeline</button>
+        </div>
+        
+        <div id="loading" class="loading" style="display: none;">Testing... This may take up to 60 seconds...</div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function testComplete() {
+            const companyName = document.getElementById('companyName').value;
+            const resultDiv = document.getElementById('result');
+            const loadingDiv = document.getElementById('loading');
+            
+            if (!companyName) {
+                alert('Please enter a company name');
+                return;
+            }
+            
+            loadingDiv.style.display = 'block';
+            resultDiv.innerHTML = '';
+            
+            try {
+                const response = await fetch('/api/test-gemini-complete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ companyName }),
+                });
+                
+                const data = await response.json();
+                loadingDiv.style.display = 'none';
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <h2>✅ Success!</h2>
+                        <p><strong>Company:</strong> ${data.companyName}</p>
+                        <p><strong>Response Length:</strong> ${data.rawResponseLength} characters</p>
+                        <p><strong>Prompt Length:</strong> ${data.promptLength} characters</p>
+                        ${data.parseError ? `<p><strong>Parse Error:</strong> <span style="color: red">${data.parseError}</span></p>` : '<p><strong>Parse Status:</strong> ✅ Success</p>'}
+                        ${data.parsedSections ? `<p><strong>Sections Found:</strong> ${data.parsedSections.length}</p>` : ''}
+                        
+                        <h3>Raw LLM Response (first 2000 chars):</h3>
+                        <div class="raw-response">${data.rawResponse.substring(0, 2000)}${data.rawResponse.length > 2000 ? '...\n\n[Response truncated - full length: ' + data.rawResponseLength + ' chars]' : ''}</div>
+                        
+                        ${data.parsedSections ? `
+                        <div class="sections">
+                            <h3>Parsed Sections:</h3>
+                            ${data.parsedSections.map((section, index) => `
+                                <div class="section">
+                                    <h3>Section ${index + 1}: ${section.title}</h3>
+                                    <p>${section.content.substring(0, 200)}${section.content.length > 200 ? '...' : ''}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                        ` : ''}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <h2>❌ Error</h2>
+                        <p><strong>Error:</strong> ${data.error}</p>
+                        ${data.stack ? `<pre>${data.stack}</pre>` : ''}
+                    `;
+                }
+                
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h2>❌ Network Error</h2>
+                    <p>${error.message}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

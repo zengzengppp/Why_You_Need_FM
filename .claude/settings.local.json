@@ -41,7 +41,13 @@
       "Read(C:\\Users\\zengch00\\FM_TEST\\Why_You_Need_FM\\futurmaster-poc/**)",
       "Read(C:\\Users\\zengch00\\FM_TEST\\Why_You_Need_FM\\futurmaster-poc/**)",
       "Read(C:\\Users\\zengch00\\FM_TEST\\Why_You_Need_FM\\futurmaster-poc/**)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Read(C:\\Users\\zengch00\\FM_TEST\\Why_You_Need_FM\\futurmaster-poc/**)",
+      "Bash(npm run lint)",
+      "Bash(node:*)",
+      "Bash(del test-json-format.js)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

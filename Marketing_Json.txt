@@ -1,0 +1,117 @@
+{
+  "client_attraction_profile": {
+    "company_description": {
+      "name": "FuturMaster",
+      "tagline": "Unleash Complexity: Turn It Into **Competitive Advantages** with FuturMaster [1]",
+      "core_belief": "At FuturMaster, we believe that by unleashing complexity, companies can turn it into competitive advantages. This requires the **right technology** [2].",
+      "uniqueness": "FuturMaster’s uniqueness lies in a combination of **technology, data and business expertise** [3]."
+    },
+    "vision": {
+      "current_world_state": "Today’s world is characterized by **uncertainty and hyper-volatility**, disrupting the market status quo for all business sectors [1].",
+      "opportunities_risks": "There are opportunities and high risks for companies, with new contenders emerging to challenge established leaders [1].",
+      "solution_approach": "To effectively manage uncertainty and hyper-volatility, companies need to **plan closer to end consumers** and **leverage their entire supply network**, from primary suppliers to final customers [1]."
+    },
+    "key_capacities_and_solutions": {
+      "platform_name": "BLOOM Platform [4]",
+      "overall_purpose": "The FuturMaster Bloom platform enables companies to **unleash the complexity** inherent in their industry and **turn it into competitive advantages** [4].",
+      "strategic_level_capabilities": [
+        "**Execute their company’s strategy** by translating it into actionable choices, materialized as data [5]. (Company’s strategy includes Go-To-Market, Target Service Levels, Business Priorities, Business Success Criteria) [5, 6]",
+        "**Translate the company’s go-to-market strategy** into a 3-5 year sales plan [5].",
+        "**Optimise the supply network’s configuration** [5]."
+      ],
+      "medium_short_term_horizon_capabilities": [
+        "Manage **demand planning and demand sensing** [6].",
+        "Establish the **budget** for the next year based on the demand plan combined with the 3-5 year sales plan [6].",
+        "Fill the gap between the budget and the latest demand plan by leveraging **trade promotions activities** to achieve business targets [6].",
+        "Define the **mid-term production plan** and the **purchasing plan** [6].",
+        "Optimize the **resource requirements plan** to meet sales in the mid-term based on supply network utilization inherited from long-term planning [6].",
+        "Optimize the **resource utilization** to meet sales in the short-term based on resources planned during the mid-term planning phase, as well as supply network optimization for this period [7]."
+      ],
+      "specific_modules": [
+        {
+          "module_name": "**BLOOM DEMAND PLANNING** [8]",
+          "description": "Thrive in a **VUCA world** by turning complexity into competitive advantages [8].",
+          "features": [
+            "Leverages **advanced Forecast at Scale technology** to incorporate large amounts of internal and external data for **accurate and responsive demand plans** [8].",
+            "Benefits from **advanced algorithms, event detection, data cleansing, exception management, personalized dashboards, collaboration, and scenario planning** [8]."
+          ]
+        },
+        {
+          "module_name": "**BLOOM SUPPLY PLANNING** [9]",
+          "description": "Gain **agility, resilience, and optimized performance** [9].",
+          "features": [
+            "Unleashes the complexity inherent in your supply network and turns it into competitive advantages [9].",
+            "Simulates a **digital twin of the supply chain** to facilitate data-driven decisions [9].",
+            "**Advanced algorithms** for global optimization, and a **semantic network graph** for a holistic view and understanding of the network [9].",
+            "Features a **fully-costed supply chain model** to achieve the **lowest total cost-to-serve** [9]."
+          ]
+        },
+        {
+          "module_name": "**BLOOM TRADE PROMOTIONS X (TPx)** [10]",
+          "description": "Achieve business targets, transform trade promotion management, and drive sales [10].",
+          "features": [
+            "Leverages **advanced ML and AI algorithms** [10].",
+            "**Predicts uplift**, calculates **cannibalization effects**, and **optimizes return on investment** [10].",
+            "Includes **AI-powered insights, cannibalization rate calculations, dynamic dashboarding, and scenario planning tools** [10]."
+          ]
+        },
+        {
+          "module_name": "**BLOOM SALES & BUDGET PLANNING** [11]",
+          "description": "Translates ambition into a go-to-market strategy involving all organizational stakeholders [11].",
+          "features": [
+            "Allows **live simulations and scenarios at scale** [11].",
+            "Translates simulations into data and dashboards to plan the go-to-market strategy and observe its impacts [11].",
+            "Supports **data-driven decisions** by understanding impacts on margin, revenue, and working capital [11]."
+          ]
+        }
+      ],
+      "integration_capabilities": [
+        "Builds **horizontally-integrated optimized plans** that take into account the extended supply network [7].",
+        "Builds **vertically-integrated long-term, medium-term and short-term sales, demand and supply plans** aligned with the company’s strategy [7]."
+      ]
+    },
+    "technologies_and_differentiators": {
+      "core_technologies": [
+        "**Machine Learning (ML)** [10, 12]",
+        "**Artificial Intelligence (AI)** [10]",
+        "**Forecast at Scale technology** [8, 12]",
+        "**Digital Twin modelling** [9, 12]",
+        "**Global Optimization algorithms** [9, 12, 13]"
+      ],
+      "key_differentiators": [
+        "Technology that enables **forecasting at scale**, capable of processing **massive volumes of data**, supporting **automated data cleansing**, and leveraging **external variables** to determine best-fit effects [13].",
+        "**Smart algorithms for global optimization** and **vertical integration** of long, mid, and short-term planning, inheriting higher-level decisions [13].",
+        "**Horizontal integration and consistency** across the extended supply network [4].",
+        "**Data-driven approach** enabling the translation of strategy into actionable choices, materialized as data [3].",
+        "**Business expertise** to identify necessary decisions and build best-fit solutions to improve and optimize customers’ business objectives [3]."
+      ]
+    },
+    "proven_track_record": {
+      "customer_base": "A customer community covering **more than 600 customers in all industries** [14].",
+      "trust_level": "**Trusted by world’s leading & fast-growing companies** [14]."
+    },
+    "target_domains_and_industries": [
+      "**Packaged Food** [14]",
+      "**Fresh Food** [14]",
+      "**Alcoholic Drinks** [14]",
+      "**Soft Drinks** [14]",
+      "**Beauty** [14]",
+      "**Pharma** [14]",
+      "**Chemicals** [14]",
+      "**Energy** [14]",
+      "**Retail Industry** [14]",
+      "**Electronics** [14]",
+      "**Apparel** [14]",
+      "**Industrial Manufacturing** (Discrete Manufacturing Industries) [14]",
+      "**Automotive & Transportation** (Discrete Manufacturing Industries) [14]",
+      "**Process Manufacturing Industries** [14]"
+    ],
+    "strategic_advantages_for_clients": [
+      "Achieve **strategic competitive advantages** [5].",
+      "Increase **agility & resilience** [5].",
+      "Improve **operational & financial results** [5].",
+      "**Thrive in a VUCA world** [8].",
+      "Achieve the **lowest total cost-to-serve** [9, 14]."
+    ]
+  }
+}

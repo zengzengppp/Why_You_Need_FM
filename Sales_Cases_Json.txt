@@ -1,0 +1,225 @@
+[
+  {
+    "company_description": "L'Oréal, the **world leader in beauty**, known for creating inclusive beauty products and services. Specifically, the **Luxury Division** focuses on high-end beauty [1]. It is the **1st cosmetics group worldwide**, with 85,400 employees and €32.28 billion in sales in 2021, achieving a record operating margin of 19.1% [2]. The company manages a global brands portfolio across four divisions: Luxe, Professional Products, Consumer Products, and Active Cosmetics [2].",
+    "industry": "Beauty & Cosmetics",
+    "Goal": "To achieve **increasing performance & customer service level in a volatile world** [1]. Key goals include: sharing a **realistic and feasible vision of future turnover** [2], providing the **most accurate sell-in sales forecast in units** over an 18-month horizon at both product and business levels [2]. They aim to model sell-out forecasts to be closer to consumers and **enrich their sell-in forecast building** [3]. The company also seeks to **understand turnover segmentation** to define the right modeling level [4], build a **customer-driven sell-in strategy** in a shifting market [5], and **enhance demand planners’ missions** to better serve end consumers [6].",
+    "pain/point / challenges": [
+      "Operating in a **volatile world** characterized by **VUCA (Volatility, Uncertainty, Complexity, Ambiguity)** [1, 5].",
+      "Consumer behavior that **keeps shifting** due to new disruptions like Covid and inflation [5].",
+      "The challenge of **understanding turnover segmentation** to define effective planning models [4].",
+      "The critical mission of **setting an accurate statistical trend** amidst market fluctuations [5, 7]."
+    ],
+    "solution_implemented": [
+      "FuturMaster serves as L'Oréal's **core Demand Planning solution** [3], with a partnership extending **over 20 years** [4].",
+      "Utilized **two forecasting models**: country level and centralized level, capable of modeling at the SKU/Country level [4, 5].",
+      "**Upgrading to FuturMaster Bloom** to better address seasonality and statistical trends, moving from an aggregated level to a detailed SKU/Country level [7].",
+      "The **Bloom platform enhances demand planners' capabilities** through features like Statistical Segmentation, Automatic Cleansing, a wider array of Statistical Models, and Best Fit functionality to select the optimal statistical model [6]."
+    ],
+    "quantified_results": {
+      "deployment_scope": ">**99% worldwide deployment** of FuturMaster at L'Oréal, supporting **80 countries** and **3,250 users**, including 650 demand planners [4].",
+      "forecast_accuracy_improvement": "The aim is to 'give the most accurate sell-in sales forecast' [2], and upgrading to FuturMaster Bloom specifically 'to better address seasonality & statistical trend' [7] implies significant accuracy improvement, though a specific percentage is not provided."
+    },
+    "project_duration": "**Over 20 years of partnership** with FuturMaster [4]. The upgrade to FuturMaster Bloom is a recent strategic initiative [7].",
+    "key_quote": "Increasing Performance & Customer Service Level in a Volatile World using FuturMaster Bloom" [1] and "Enhance Demand Planners’ Mission...to better serve our end consumers in a volatile world" [6].
+  },
+  {
+    "company_description": "Wabtec Corporation is a **global transit segment leader** in the railway industry, providing a vast array of solutions including pantographs, braking systems, doors, HVAC, and energy efficiency solutions [8-10]. They are implementing a **new supply chain model** for their growing Spares & Trading business [8, 11].",
+    "industry": "Railway Industry, Transit Rail Solutions",
+    "Goal": "Implement a **new, service-driven Supply Chain Model** for the Spares & Trading business [8, 11, 12]. Specific objectives include: **strengthening customer relationships and improving sales visibility** through monthly sales reviews and distribution frame agreements [13]. A critical goal is to **shorten customer lead-times and secure on-time delivery (COTD)**, enabled by identifying 'runners' and 'critical' parts, and managing forecasts in the ERP [13]. They also aim to **improve inventory management** for standard catalog and customer parts [13], **strengthen supplier relationships** with revised agreements, and **improve workload management** by detecting overloaded/underloaded periods [14].",
+    "pain/point / challenges": [
+      "A **complex supply chain model** historically **'production driven'** with an OEM legacy [11].",
+      "**Siloted organization**, where sites are responsible for their own markets, and external suppliers are managed by only one site [11].",
+      "Operating in a **growing market** with increasing requirements for better service, facing **newcomers with distinctive business models and increased competition** [11].",
+      "Overcoming **past Wabtec habits** of lower selling prices for bigger Minimum Delivered Quantities, and **customer habits** of single large orders versus multiple smaller ones [15]."
+    ],
+    "solution_implemented": [
+      "Deployment of **FuturMaster in the cloud**, supported by central and local demand planners [14].",
+      "A comprehensive **forecasting methodology** involving statistical forecasts, manual adjustments by analysts, collaborative consensus, and final approval by an executive committee [16, 17].",
+      "Implementation of a **new macro process for FM Demand Planning** that consolidates sales history, master data (product/customer hierarchies), statistical forecasts, sales representative inputs, customer rolling forecasts, and frame agreements to generate validated forecasts [15, 18]."
+    ],
+    "quantified_results": {
+      "service_level_target": "Targeting a **better service rate of >98%** and **shorter lead-times of 1 to 3 weeks** [12].",
+      "forecast_accuracy_improvement": "Adapted lead times and Minimum Delivered Quantity are expected to have a **direct impact on Forecast Accuracy** [19], contributing to improved customer on-time delivery (C-OTD) and inventory management [19]."
+    },
+    "project_duration": "The project followed a roadmap including a Proof of Concept (POC), a Pilot, and a Core Model phase [20]. Project committees meet monthly, and steering committees convened four times during the project [20].",
+    "key_quote": "The new Supply Chain Model aims to be 'Service driven' to 'Strengthen Wabtec business' and 'Move to mixed Supply Chain Strategies MTO + ATO + MTS'" [12].
+  },
+  {
+    "company_description": "Fleury Michon is a **113-year-young, independent, family-owned French company** in the food industry [21]. With **€725 million in revenue in 2018** and 3,610 employees, they sold **380 million consumer units** [21]. Their diverse product portfolio includes packaged cured meats, ready meals, salad jars, and surimi, distributed across French supermarkets, internationally, and new food services [22, 23].",
+    "industry": "Food Industry (Ultra-fresh, Prepared Meals, Cured Meats)",
+    "Goal": "To **support service excellence and growth** by continuously evolving their supply chain [21, 23]. Key objectives include: meeting business challenges arising from activity growth, increasing SKUs and promotions, and industrial tool saturation [24]. They sought to establish **one reliable forecast for all S&OP actors** [24], and ultimately improve forecast accuracy and finished goods stock levels [25].",
+    "pain/point / challenges": [
+      "Managing **activity growth** and scaling tools that were not ready for expansion in the early 2000s [24].",
+      "Coping with an **increasing number of SKUs and promotions**, leading to the **saturation of industrial tools** [24].",
+      "The need for a **single, consolidated forecast** to align all S&OP stakeholders [24].",
+      "Challenges presented by **short product shelf lives**, ranging from **5 to 38 days** [24]."
+    ],
+    "solution_implemented": [
+      "A **partnership with FuturMaster spanning over 20 years** [24].",
+      "Implemented solutions for **demand and planning at multiple levels** across all plants, including **advanced promotion management** [23].",
+      "Developed a **centralized operational forecast** characterized by daily data, permanent updates, and SKU/delivered customer level detail for a 25-week horizon [26, 27].",
+      "Established an **operational planning process** with daily to weekly validation at product, line, and plant levels [27, 28].",
+      "Implemented a **strategic forecast** with quarterly updates, monthly meetings, and SKU/retailer level detail for a 6-to-18-month horizon, feeding into budgeting and S&OP [28, 29].",
+      "Utilized **collaborative forecasting** incorporating hypotheses, promotions, marketing activities, and sales history [28, 29]."
+    ],
+    "quantified_results": {
+      "forecast_accuracy_improvement": "Achieved a **forecast accuracy of 90-93%** [25].",
+      "inventory_reduction": "Maintained a **finished goods stock level of only 3 days** [25].",
+      "operational_efficiency": "Processing **1,000 SKUs**, managing **6,500 orders/week** and **1 million boxes/week**, delivering **1,600 tons/week**, with a rapid **3-hour turnaround between order and shipment** [24, 26]."
+    },
+    "project_duration": "A **partnership for more than 20 years**, with a clear supply chain evolution roadmap from 1998 to 2018 [24].",
+    "key_quote": "Our supply chain evolution over the years to meet business challenges" [23], demonstrating a long-term commitment and investment in "competent and motivated teams, robust and agile IT tools" [30].
+  },
+  {
+    "company_description": "Heineken is a global brewing company with a **diversified global footprint** and a **winning portfolio of over 300 brands** [31, 32]. They generate **over 40% of revenues from premium products** and have a strong track record in building new categories like cider and low/no alcohol beverages [32].",
+    "industry": "Beverage (Beer, Cider, Low & No Alcohol)",
+    "Goal": "To **scale S&OP globally** and **enhance technology** to address localized challenges closer to the consumer [33, 34]. The S&OP FIT Program aims to: **eliminate ambiguity through data-driven approaches**, **leverage complexity using algorithmic analysis**, **organize for uncertainty with targeted resilience**, and **neutralize volatility by facilitating agility to change plans** [35]. Ultimately, the goal is to **achieve strategic competitive advantage, increase agility & resilience, and improve operational & financial results** [36, 37].",
+    "pain/point / challenges": [
+      "Reliance on **local, disparate solutions** that were difficult to scale globally and sometimes 'went sour' [33].",
+      "Emergence of **new constraints in IT and business support** that challenged the pace of growth [34].",
+      "Operating in a **VUCA (Volatility, Uncertainty, Complexity, Ambiguity) modern era** [35].",
+      "Challenges related to **cross-border opportunities and cultural changes** for advanced optimization [38, 39]."
+    ],
+    "solution_implemented": [
+      "A **28-year partnership with FuturMaster** [33].",
+      "Initiated the **S&OP CORE Program** and transitioned to a **SaaS Model with S&OP FIT** to introduce scalable support [33, 34].",
+      "Adopted the **FuturMaster BLOOM platform**, leveraging **AI/Machine Learning and a cloud user experience** [34].",
+      "Implemented **Supply Chain Planning Hubs powered by FuturMaster**, including: a **Regional Planning Excellence Hub** for standardizing processes and integrating ERP data [40]; a **Regional Planning Visibility Hub** for regional insights, material consolidation, and rapid modeling [38]; and a **Cross-Border Network Optimization Hub** for sophisticated algorithmic modeling to achieve true optimization of service at minimum cost [39].",
+      "Bloom technology enables **Trade Promotions x Machine Learning & Forecast at Scale, Global Optimization Algorithms, and Digital Twin Modeling** [36].",
+      "FuturMaster delivers **Best-Fit solutions** tailored to company maturity, organization, skills, and data availability, constantly adapted to evolutions [37, 41]."
+    ],
+    "quantified_results": {
+      "deployment_scope": "The S&OP FIT Program successfully delivered planning capabilities into **27 operating companies in less than 5 years**, with 8 more deployments approaching Go-Live [34]. A global rollout started with **14 operations in less than 3 years** [33].",
+      "cost_savings": "**Delivered cost savings on logistics and production costs** for cross-border deliveries through the cost optimization engine [39]."
+    },
+    "project_duration": "A **28-year partnership** with FuturMaster [33]. The S&OP FIT Program deployed to 27 operating companies in **less than 5 years** [34].",
+    "key_quote": "Heineken’s S&OP FIT Program, powered by FuturMaster, has successfully delivered planning capabilities into 27 operating companies in less than 5 years" [34]. "FuturMaster Bloom technology enables to leverage complexity" [36]. "Our Bloom platform enables to thrive in a challenging era" [36].
+  },
+  {
+    "company_description": "Moy Park is a **top 5 leading European poultry company** and a diversified protein-based food company, with expertise in poultry, beef, pork, and meat-free products [42]. As a **top 15 UK food business** and leader in convenience products, Moy Park processes **over 5 million birds per week** across 12 production sites and operates a **unique vertically integrated supply chain** [42, 43]. They are part of Pilgrim's, one of the largest chicken processors globally [44, 45].",
+    "industry": "Food Industry (Poultry, Beef, Pork, Meat-Free)",
+    "Goal": "To **generate a single, unified forecast** and **enable a collaborative S&OP process** [46]. Key objectives included: improving the management of promotional activity and integrating external data (customer forecasts, market insight) [46]. The company also aimed to meet KPI targets of **85% forecast accuracy (FCA) and +/-2% bias** [46], and later to **outperform existing processes using FuturMaster Bloom's machine learning capabilities** for demand planning and trade promotion management [47].",
+    "pain/point / challenges": [
+      "Difficulty in **managing promotional activity effectively** [46].",
+      "Existing forecast accuracy and bias issues, with FCA ranging from **69% to 82%** and bias from **+6.2% to -1.5%** [48].",
+      "External disruptions such as **Covid lockdowns, supply constraints, and retailers passing on inflation** diverted focus to short-term issues and data cleansing [49].",
+      "A **long lead time** in their vertically integrated supply chain: **9 weeks from egg to product on the shelf**, and up to **18 months to impact bird availability** [50]."
+    ],
+    "solution_implemented": [
+      "Implemented **FuturMaster for Demand Planning and Advanced Promotion Management (APM)**, establishing one archivable version of data measured in weekly SKU-level buckets [48].",
+      "Transitioning to **FuturMaster Bloom**, which offers a best-solution fit for all needs, emphasizing standardization, flexibility, and collaboration with live data [51].",
+      "Conducted **Proof of Value (PoV) exercises** to demonstrate the superiority of FuturMaster's new demand planning with machine learning over existing processes, and to assess how machine learning in TPx (Trade Promotions) could improve promotional profitability [47, 52].",
+      "Utilized **Demand Sensing Forecast with machine learning functionality** for in-depth analysis of trending, seasonality, and external data [53]."
+    ],
+    "quantified_results": {
+      "forecast_accuracy_improvement": "Achieved a **4% improvement in MAPE (Mean Absolute Percentage Error) for the Top 20 Nodes** when comparing FuturMaster Bloom with machine learning to the old FuturMaster version, demonstrating an 'Improved Statistical Starting Point' [54].",
+      "initial_fca_improvement": "Improved FCA from **69% to 82%** with the initial FuturMaster implementation [48]."
+    },
+    "project_duration": "Go-live with FuturMaster was in **March 2013** [48]. The migration roadmap to FuturMaster Bloom involved PoV exercises in Q2-Q3 2021, and upgrades to SaaS DP with ML in Q4 2021 and SaaS TPx with ML in Q1 2022 [47, 52].",
+    "key_quote": "Moy Park is committed to 'Being the Best,' a moving target, by embracing 'Standardised Flexibility, Process, Collaboration with Live Data, [and] Best use of the best technology' through FuturMaster Bloom" [51].
+  },
+  {
+    "company_description": "Petit Bateau is a French clothing manufacturer that embarked on a journey for an **agile and profitable supply chain** [55]. Their complex supply chain involves multi-flow and multi-level bills of materials, significant volumes of components and finished products, and pronounced seasonality [56].",
+    "industry": "Apparel Industry (Clothing Manufacturing)",
+    "Goal": "To achieve **Objectives Customer Service, Agility, and Responsiveness (OSCAR)** [56, 57]. Key goals included: **reliable multi-level planning** [57], **reduced time-to-market** [58], and **more reliable plans** [59]. They aimed to **increase the productivity of the planning team and factories (1-3%)**, **reduce remaining stocks (8% on materials, 4% on finished products) and stock levels (by >1 week)**, and ultimately **increase turnover** due to improved service level and time-to-market [59, 60].",
+    "pain/point / challenges": [
+      "A **highly complex supply chain** characterized by multi-flows, multi-level Bills of Materials, large volumes, and significant seasonality [56].",
+      "Customer retention challenges, with **1 out of 2 clients becoming inactive** and **1/5 moving to a lower segment** over a year [56].",
+      "Prior to the OSCAR project, planning was **manual for both finished products (4,000 styles) and knitting (multiple raw materials)**, leading to inefficiencies [59]."
+    ],
+    "solution_implemented": [
+      "Collaboration started in **2016 with FuturMaster**, chosen for its deep understanding of business context and **solution consistency across all planning levels** (multi-site, multi-level BOM, volumetry, seasonality) [61].",
+      "The **OSCAR project** implemented **reliable multi-level planning**, integrating all parameters and constraints for optimized reliability [57].",
+      "FuturMaster calculates **warehouse replenishment plans, production, and supply plans**, incorporating management rules (lot sizes, allocations) and capacity constraints (factories, manufacturing groups) [62].",
+      "The OSCAR system processes customer needs, stocks, WIPs, and purchases to generate weekly production and raw material transfer plans [57].",
+      "The **Bloom platform** is leveraged to achieve strategic competitive advantage, increase agility and resilience, and improve operational and financial results [63]."
+    ],
+    "quantified_results": {
+      "time_to_market_reduction": "**Reduced Time-To-Market (TTM)** by **6 days for the planning cycle** (from 13 to 7 days), **3 weeks for delivery lead time** (from 18 to 15 weeks), and a significant **13-week reduction for the reactivity flow** [58].",
+      "productivity_increase": "**Increased productivity of the planning team** and a **1-3% increase in factory productivity** [59].",
+      "inventory_reduction": "**Reduced remaining stocks by >8% on materials and 4% on finished products**, and **stock levels by >1 week** on both [59, 60].",
+      "revenue_increase": "Achieved an **increase in turnover** due to improved service level and time-to-market [60]."
+    },
+    "project_duration": "Collaboration began in **2016** [61]. The project resulted in a **planning cycle reduction of 6 days** [58].",
+    "key_quote": "**'TURN COMPLEXITY INTO A COMPETITIVE ADVANTAGE'** [60] and achieve 'THE POWER OF MULTI-LEVEL PLANNING: PETIT BATEAU’S JOURNEY FOR AN AGILE AND PROFITABLE SUPPLY CHAIN' [55]."
+  },
+  {
+    "company_description": "Pierre Fabre Dermo-Cosmétique is the **#2 dermo-cosmetics group in the world**, and **#1 in France and China** [64]. With €1,261 million in dermo-cosmetics revenue and €124 million in dermatology, the company operates in **124 countries** with 8 international brands and 4,300 employees abroad [64, 65].",
+    "industry": "Dermo-Cosmetics, Dermatology, Pharmaceuticals",
+    "Goal": "To **break a vicious circle of lack of anticipation and instability** that was hindering service [66, 67]. Key objectives included: **reinforcing tools and forecast processes**, developing trust in central responses and reactivity for adjustments, and transforming purchasers into 'facilitators' [67]. The overall aim was to **improve service and forecast accuracy**, gain **18-month factory workload visibility**, and **optimize central processes and tools** to facilitate regional S&OP [68, 69].",
+    "pain/point / challenges": [
+      "A **vicious circle of anticipation and stability issues**, leading to **serious forecast bias** (too much short-term focus), ill-adjusted capacity, and planning instability causing delays [66].",
+      "**Information systems were not automated enough** to handle the vast volume of SKUs across countries, resulting in extensive emergency work [66].",
+      "**Targets at different links in the chain did not encourage global service/stock optimization** [66].",
+      "A **highly complex environment in production and distribution**, characterized by a wide range of products, high sales force activity, intense competition, and significant product range renewal (30% per year) [70-72].",
+      "External challenges such as **supplier crises and difficult new DC implementations** negatively impacted OTIF (On-Time In Full) and forecast accuracy [68, 73].",
+      "Struggles with **data management (Master Data, History)** and the need to shift from correcting figures to adjusting model parameters [74]."
+    ],
+    "solution_implemented": [
+      "A comprehensive program covering all planning processes, linked to realization and performance management, including **S&OP tool and process implementation** [70, 75].",
+      "**World DRP (Distribution Requirements Planning) implementation and optimization** [75].",
+      "Developed an innovative **FuturMaster DMS (Dynamic Multi-Sourcing) solution** to calculate a multi-sourcing deployment plan that integrates priorities, industrial hazards, substitution possibilities, and stock-out risks [73, 76].",
+      "The global solution integrates **SAP, DMS, and Master Data Management** to cover planning from Month to Month+18 at appropriate aggregation levels [72].",
+      "A **strong partnership with FuturMaster** to develop new, flexible tools and methods, gaining efficiency in both design and rollout [69]."
+    ],
+    "quantified_results": {
+      "productivity_increase": "Achieved the ability to **manage week-bucket data on 35,000 SKUs** [68].",
+      "visibility_improvement": "Gained an **18-month factory workload vision** to enable timely decision-making [68].",
+      "forecast_accuracy_improvement": "Realized **'nice improvement of performance' on OTIF and Forecasts** during the project, along with overall 'Service and forecast Improvement' [68, 73]. While a specific percentage is not given for accuracy, the ability to manage complex data for 35K SKUs over extended horizons signifies a substantial leap in forecasting capability."
+    },
+    "project_duration": "A long-term transformation program with project components spanning from **2010 to 2019** [75, 77].",
+    "key_quote": "A shared End to End SC vision with impact of central shortage on market and stock" [68]. "Thank you FuturMaster for: A strong partnership to develop new tools [and] Solution flexibility to adapt to our needs" [69].
+  },
+  {
+    "company_description": "Sennheiser is a global audio company dedicated to shaping the future of audio and creating unique sound experiences [78]. In 2021, the Sennheiser Group generated **€636.3 million in turnover**, an 11% increase from the previous year [78]. Their product lineup spans Professional Audio, Consumer, and Business Communication divisions [79].",
+    "industry": "Audio (Professional Audio, Consumer Electronics, Business Communication)",
+    "Goal": "To **transform Supply Chain Planning** to achieve **high visibility of customer demand throughout the supply network** [78, 80]. Specific goals included: achieving the **right inventory levels, fewer lost sales, accurate and reliable delivery dates, clearer priorities along the chain, fewer inventory devaluations, and reduced operational costs** [81]. The project aimed to optimize supply decisions based on demand priorities and ensure reliable promises to customers [82, 83].",
+    "pain/point / challenges": [
+      "A **very difficult market for electronic components**, impacting production and availability [84].",
+      "Challenges in **scaling workshop production** for diverse business lines (Professional Audio, Consumer, Business Communication) [81].",
+      "An **unsupported legacy SC Planning system** and **KPIs that were not on target** for reliability and availability [85].",
+      "The inherent complexity of IT projects, where **interfaces are always the critical path and often underestimated** [86]."
+    ],
+    "solution_implemented": [
+      "Launched the **SCP Pitch project with FuturMaster** to transform Supply Chain Planning through new processes, IT software, and changing planning roles [80].",
+      "FuturMaster serves as **one software covering all supply planning areas**: Demand Planning (statistical sales forecast, sales input), Distribution Planning (transfer planning, demand plan for plants/suppliers, demand propagation with priorities, freight mode optimization), and Production/Purchase Planning (constraint-based supply pictures, production/purchase time/sequence optimization) [87, 88].",
+      "Replaced traditional MRP-Logic in distribution, purchase, and production planning with a system that **propagates demand with priorities and real transfer times** [82].",
+      "Implemented **Distribution Planning Plus**, featuring customer-centric algorithms, **Available-to-Promise (ATP)** capabilities across all warehouses, and network-wide customer priority propagation [83, 89].",
+      "Adopted an **agile approach for Production Planning** to continuously learn and adjust, focusing on constraint-based feasible supply plans [89]."
+    ],
+    "quantified_results": {
+      "inventory_reduction": "Achieved **-5% inventory by better allocation** to regions and **-20% inventory in Sydney and Hong Kong** [90]. This also led to **less raw material inventory ordered too early** [89].",
+      "cost_reduction": "**5% less undesired airfreight** and increased consolidated sea shipments [90].",
+      "service_level_improvement": "**+10% improved promised delivery dates to customers** [90], and higher availability by producing the right products first [90].",
+      "flexibility_improvement": "Enabled **full flexibility** for Asian subsidiaries, directing purchased orders to DCs for optimal product storage [91]."
+    },
+    "project_duration": "Distribution Planning was in production since **February 2021**, following a phased Go Live approach for Distribution and Production Planning [83, 85].",
+    "key_quote": "'IT projects need to be: process change + organizational change, supported by software' [92], and that 'Supply Chain Planning is not a linear process. It runs in integrated circles, and it is very hard to fully grasp the whole process' [86]. Ultimately, 'At one point in time, you will have to have the courage to make a big jump!' [86]."
+  },
+  {
+    "company_description": "Vilmorin-Mikado is a **unique Franco-Japanese seed company**, recognized as the **1st company in the world for Vegetable seeds and a Global Carrot Leader** [93]. With €218 million in revenues (20/21) and 15% of revenues invested in R&D, they focus on the creation, production, and sale of innovative vegetable varieties globally, distributing through 15 locations in 100 countries [94, 95].",
+    "industry": "Agriculture (Vegetable Seeds Production & Sale)",
+    "Goal": "To establish **Global Collaborative Demand Planning to support continuous growth** [96]. Key objectives include: **reducing volatility** by enhancing market feedback and clear visibility across the entire chain [97]. They aim to secure **reliable short and long-term visions** [97], improve sales forecasting accuracy, and ensure all perimeters are connected with structured data [98]. The overarching goal is to **drive the business globally** across different horizons with a unique, common tool adapted to specific business cases, and to **measure, improve, and animate the forecasting process** to reduce discrepancies [98-100].",
+    "pain/point / challenges": [
+      "**Complex inventory management**: decisions are made up to two years before sales, cash is mobilized in inventory, and stock is perishable [101].",
+      "**Volatile forecasts** due to few commitments on needs, evolving varieties, and climatic conditions [101].",
+      "An **extremely long and complex timeline**: 12 months to produce raw carrot seeds, 3-6 months to process finished products, and 3-6 months for customer carrot production, totaling a **2-year process** [95, 101-103].",
+      "**Complex and segmented product range**: 50 species with numerous varieties, seed formats, and country-specific requirements [104].",
+      "**Challenges with 'working with nature'**: production across hemispheres, crop failures/excess due to climate, and perishable inventory [96].",
+      "**Inaccurate forecasts** leading to risks on stocks, shortages, and delayed deliveries [98, 105, 106].",
+      "**Organizational and technical challenges** during global deployment, including cultural differences, time zones, languages, and integrating with multiple ERP systems [107]."
+    ],
+    "solution_implemented": [
+      "Implemented **FuturMaster for Global Collaborative Demand Planning**, creating a common and collaborative tool for inter-departmental and worldwide use [96-98].",
+      "The **Forecasting Flow in FuturMaster** connects 10 profiles and 165 active users across subsidiaries, with capabilities for monthly forecast adjustments, consolidation by country, DRP calculations, and detailed demand planning activities like managing availabilities and allocations [99, 108].",
+      "**Global deployment of FuturMaster's Forecasting Tool** from 2016 onwards, connecting countries like Mexico, Korea, China, Japan, France, Italy, Spain, Morocco, and Brazil, including the implementation of a new Core Model [108, 109].",
+      "A **dedicated organization** with sponsors, business owners, and solution managers, alongside shared guidelines, defined roles, training, and a key user community, ensures process sustainability and continuous improvement [110]."
+    ],
+    "quantified_results": {
+      "reach": "The company manages **35,000 SKUs/countries** within FuturMaster, supporting **165 active users** [108]. Annually processes **76,045 orders** and **119,216 order lines** [95].",
+      "forecast_accuracy_improvement": "A clear objective to **improve forecasts accuracy at the global perimeter** [100], directly impacting S&OP management, stock levels, and customer satisfaction."
+    },
+    "project_duration": "The deployment of FuturMaster's Forecasting Tool started in **2016** and is planned to connect all subsidiaries by the **end of 2022/2023** [100, 108, 109].",
+    "key_quote": "'NO FORECASTS = NO SEED SUPPLY!' [111], and 'BAD FORECASTS = RISKS ON STOCKS, SHORTAGE, PRODUCTS’ FORM NO ON-TIME DELIVERY!' [98, 106]. The company embraces the philosophy: 'Whatever The Cultural Differences, We Speak The Same Language With The FuturMaster Tool' [110]."
+  }
+]

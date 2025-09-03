@@ -9,7 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@playwright/mcp": "^0.0.36",
+    "ai": "^5.0.30",
     "next": "15.5.2",
     "react": "19.1.0",
     "react-dom": "19.1.0"
