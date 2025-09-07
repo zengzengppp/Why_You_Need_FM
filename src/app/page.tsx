@@ -323,16 +323,19 @@ export default function Home() {
         // Start background transition animation
         setCeremonyAnimation(prev => ({ ...prev, backgroundTransition: true }));
         
-        // Remove conflicting inline styles for CSS animation to work
+        // Ensure black background before animation starts
         if (ceremonyRef.current) {
-          ceremonyRef.current.style.background = '';
-          ceremonyRef.current.classList.add('animate-black-to-white');
+          ceremonyRef.current.style.background = '#000000';
+          // Small delay to ensure black is rendered before animation starts
+          setTimeout(() => {
+            ceremonyRef.current?.classList.add('animate-black-to-white');
+          }, 50);
         }
         
-        // Show report after transition
+        // Show report after transition - increased delay to see animation
         addTimer(() => {
           showMockReport();
-        }, 500);
+        }, 2000);
         return;
       }
       
@@ -407,18 +410,20 @@ The choice is simple: become a platform researcher or a market leader.`
   const showMockReport = useCallback(() => {
     showStage('report');
     
-    // Title animation sequence (restored to original timing)
+    // Title animation sequence - new timing for center hold + smooth transition
     addTimer(() => {
       setReportTitlePosition('visible');
-    }, 200); // Restored to original
+    }, 200);
     
+    // Hold in center for 1.5s, then start move to top animation (1.5s duration)
     addTimer(() => {
       setReportTitlePosition('top');
-    }, 1200); // Restored to original
+    }, 1700); // 200ms + 1500ms hold time
     
+    // Final state after animation completes (1.5s animation duration)
     addTimer(() => {
       setReportTitlePosition('final');
-    }, 2200); // Restored to original
+    }, 3200); // 1700ms + 1500ms animation duration
   }, [showStage, addTimer]);
 
   // Generate report with LLM API call
@@ -912,23 +917,23 @@ The choice is simple: become a platform researcher or a market leader.`
             </div>
           )}
 
-          {/* Stage 4: Static Report Interface */}
+          {/* Stage 4: Static Report Interfaced */}
           {appState.currentStage === 'report' && (
             <div className="min-h-screen py-12 opacity-100 transition-opacity duration-1000" style={{ backgroundColor: '#F2F2F2' }}>
               <div className="max-w-4xl mx-auto p-12 relative">
                 {/* Title with animation states */}
                 <div 
-                  className={`flex justify-center transition-all duration-1000 ${
+                  className={`flex justify-center ${
                     reportTitlePosition === 'center' ? 'fixed inset-x-0 opacity-0' :
                     reportTitlePosition === 'visible' ? 'fixed inset-x-0 opacity-100' :
-                    reportTitlePosition === 'top' ? 'fixed inset-x-0 opacity-100' :
+                    reportTitlePosition === 'top' ? 'animate-title-center-to-top' :
                     'relative opacity-100 pb-6 mb-8 text-center'
                   }`}
                   style={{
                     top: reportTitlePosition === 'center' || reportTitlePosition === 'visible' ? '50%' :
-                         reportTitlePosition === 'top' ? '120px' : 'auto',
+                         reportTitlePosition === 'top' || reportTitlePosition === 'final' ? undefined : 'auto',
                     transform: reportTitlePosition === 'center' || reportTitlePosition === 'visible' ? 'translateY(-50%)' :
-                               reportTitlePosition === 'top' ? 'translateY(0)' : 'none'
+                               reportTitlePosition === 'top' || reportTitlePosition === 'final' ? undefined : 'none'
                   }}
                 >
                   <h1 className="text-3xl font-medium text-brand-text" style={{ fontFamily: 'Artifika, serif' }}>
@@ -972,7 +977,7 @@ The choice is simple: become a platform researcher or a market leader.`
                     Start Your Journey
                   </button>
                   <button onClick={resetApp} className="px-8 py-3 border-2 border-brand-text text-brand-text rounded-lg text-lg font-medium hover:bg-brand-text hover:text-white transition-all duration-300">
-                    Try Another Company
+                    I Got Another Company
                   </button>
                 </div>
               </div>

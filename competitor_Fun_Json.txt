@@ -1,39 +1,72 @@
-{
-  "competitor_analysis": [
-    {
-      "competitor_name": "o9 Solutions",
-      "competitor_approach": "o9's philosophy is to provide a 'Digital Brain' – a grand, complex theoretical platform [1].",
-      "competitor_drawback": "Clients need to **assemble a team of 'neurosurgeons and data scientists' and spend years 'training' this brain** to truly think. This is likened to an **'expensive academic research project'**, rather than a ready-to-use solution [1].",
-      "futurmaster_contrast": "FuturMaster does not offer a 'brain' that you need to teach from scratch [1].",
-      "futurmaster_advantage": "FuturMaster provides an **'out-of-the-box 'Swiss Army knife''**, honed by decades of industry experience. Our philosophy emphasizes that clients' valuable time should be spent **winning the market, not experimenting in an academic sandbox**. It's a choice between becoming a platform researcher or a market leader [1]."
+[
+  {
+    "competitor_name": "o9 Solutions",
+    "Summary_Angle": "They sell a complex 'Digital Brain' that needs years of academic training; we provide a practical 'Swiss Army knife' to win in the market now.",
+    "Analysis": {
+      "competitor_approach": "o9's philosophy is to provide a 'Digital Brain' – a grand, complex theoretical platform.",
+      "competitor_drawback": "Clients need to assemble a team of 'neurosurgeons and data scientists' and spend years 'training' this brain to truly think. This is likened to an 'expensive academic research project', rather than a ready-to-use solution.",
+      "futurmaster_contrast": "FuturMaster does not offer a 'brain' that you need to teach from scratch.",
+      "futurmaster_advantage": "FuturMaster provides an 'out-of-the-box 'Swiss Army knife'', honed by decades of industry experience. Our philosophy emphasizes that clients' valuable time should be spent winning the market, not experimenting in an academic sandbox. It's a choice between becoming a platform researcher or a market leader."
     },
-    {
-      "competitor_name": "Kinaxis",
-      "competitor_approach": "Kinaxis builds everything around its 'Concurrent Planning' concept, which was a revolutionary idea 20 years ago, like a 'precisely designed, sturdy, and straight railway track' [2].",
-      "competitor_drawback": "The modern supply chain environment is no longer a plain covered by railway tracks, but a **complex terrain filled with 'swamps, hills, and sharp turns'**. Adhering to such a **rigid 'single truth' is seen as disrespecting real-world complexity** [2].",
-      "futurmaster_contrast": "FuturMaster does not offer a fixed railway track [2].",
-      "futurmaster_advantage": "FuturMaster provides a **'flexible and agile off-road vehicle' built for all terrains**. While competitors may be waiting for signals on a track, FuturMaster clients can **'cross shortcuts' and reach their destination**. It presents a choice between a straight path to the past or an agile path to the future [2]."
-    },
-    {
-      "competitor_name": "Anaplan",
-      "competitor_approach": "Anaplan describes its platform as 'infinitely flexible,' like a 'super powerful spreadsheet' capable of building anything imaginable. They metaphorically sell 'top-tier bricks, cement, and design drawings,' expecting the client to 'build the house smoothly' themselves [2].",
-      "competitor_drawback": "This approach **pushes the most difficult and core professional expertise and modeling responsibilities for supply chain planning entirely onto the client**. FuturMaster views this as a **'buck-passing'** [2].",
-      "futurmaster_contrast": "FuturMaster is not a general platform company but a **supply chain expert company**, founded on a deep understanding of supply chain challenges [2].",
-      "futurmaster_advantage": "FuturMaster's solutions have **decades of best practices and algorithms 'built-in'**. This represents 'professionalism' rather than a lack of 'flexibility.' It's a fundamental choice: to personally become the architect and builder, or to **directly move into a 'sturdy castle designed and built by experts'** [2]."
-    },
-    {
-      "competitor_name": "RELEX Solutions",
-      "competitor_approach": "RELEX is highly focused on retail and FMCG, excelling at optimizing supermarket shelf logic [3].",
-      "competitor_drawback": "While admirable, this **'over-focus' creates 'tunnel vision'**. The challenges of a global, complex manufacturing and distribution network are not equivalent to managing supermarket shelves. Using retail logic for industrial-grade complexity is like a sprinter entering a marathon – enthusiastic but **'completely ill-equipped'** [3].",
-      "futurmaster_contrast": "FuturMaster was designed from inception to address **cross-industry, deep-seated supply chain complexity** [3].",
-      "futurmaster_advantage": "FuturMaster respects the retail pace but is better equipped to **'navigate the depth of industrial manufacturing, the rigor of the pharmaceutical industry, and the volatility of high-tech industries'**. It advises choosing a partner with a **broader vision**, one who can 'run the marathon' with them [3]."
-    },
-    {
-      "competitor_name": "Blue Yonder",
-      "competitor_approach": "Blue Yonder (formerly JDA) possesses a large product 'museum' of 'legacy classics' acquired over decades. They attempt to stitch together software from different eras and technologies into a 'suite,' which is compared to tying together a 'steam engine, a transistor radio, and a smartphone' and expecting them to harmoniously play a symphony [3, 4].",
-      "competitor_drawback": "The approach results in a **lack of 'true power' due to the patchwork of 'historical fragments'** rather than a unified, modern design [4]. It implies clients would become 'museum curators' maintaining multiple antique technologies [4].",
-      "futurmaster_contrast": "FuturMaster believes true strength comes from a **'unified, modernized design'** [4].",
-      "futurmaster_advantage": "FuturMaster is a **'native platform based on a unified, modern architecture,' where 'every module is built for collaboration'**. The choice is simple: to be a 'museum curator' or to be a **'fleet commander' driving a 'modern battleship designed for future challenges'** [4]."
+    "Key_Tags": {
+      "Competitor_Weakness_Tag": ["Complex_Platform", "Academic_Approach", "High_Effort_Implementation", "Slow_Time_to_Value"],
+      "Futurmaster_Strength_Tag": ["Practical_Solution", "Out-of-the-Box", "Industry_Experience_Built-in", "Fast_Time_to_Value"]
     }
-  ]
-}
+  },
+  {
+    "competitor_name": "Kinaxis",
+    "Summary_Angle": "They sell a rigid railway track for a complex, all-terrain world; we provide the agile off-road vehicle to win.",
+    "Analysis": {
+      "competitor_approach": "Kinaxis builds everything around its 'Concurrent Planning' concept, which was a revolutionary idea 20 years ago, like a 'precisely designed, sturdy, and straight railway track'.",
+      "competitor_drawback": "The modern supply chain environment is no longer a plain covered by railway tracks, but a complex terrain filled with 'swamps, hills, and sharp turns'. Adhering to such a rigid 'single truth' is seen as disrespecting real-world complexity.",
+      "futurmaster_contrast": "FuturMaster does not offer a fixed railway track.",
+      "futurmaster_advantage": "FuturMaster provides a 'flexible and agile off-road vehicle' built for all terrains. While competitors may be waiting for signals on a track, FuturMaster clients can 'cross shortcuts' and reach their destination. It presents a choice between a straight path to the past or an agile path to the future."
+    },
+    "Key_Tags": {
+      "Competitor_Weakness_Tag": ["Rigid_Platform", "Outdated_Concept", "Single_Truth_Limitation"],
+      "Futurmaster_Strength_Tag": ["Agile_&_Flexible", "All-Terrain_Solution", "Real-World_Complexity_Handling"]
+    }
+  },
+  {
+    "competitor_name": "Anaplan",
+    "Summary_Angle": "They give you powerful bricks and cement and expect you to be the expert architect; we give you the keys to a sturdy, expert-built castle.",
+    "Analysis": {
+      "competitor_approach": "Anaplan describes its platform as 'infinitely flexible,' like a 'super powerful spreadsheet' capable of building anything imaginable. They metaphorically sell 'top-tier bricks, cement, and design drawings,' expecting the client to 'build the house smoothly' themselves.",
+      "competitor_drawback": "This approach pushes the most difficult and core professional expertise and modeling responsibilities for supply chain planning entirely onto the client. FuturMaster views this as a 'buck-passing'.",
+      "futurmaster_contrast": "FuturMaster is not a general platform company but a supply chain expert company, founded on a deep understanding of supply chain challenges.",
+      "futurmaster_advantage": "FuturMaster's solutions have decades of best practices and algorithms 'built-in'. This represents 'professionalism' rather than a lack of 'flexibility.' It's a fundamental choice: to personally become the architect and builder, or to directly move into a 'sturdy castle designed and built by experts'."
+    },
+    "Key_Tags": {
+      "Competitor_Weakness_Tag": ["DIY_Approach", "Hidden_Complexity", "Client-Side_Burden", "General_Platform"],
+      "Futurmaster_Strength_Tag": ["Expert-Built_Solution", "Best_Practices_Built-in", "Supply_Chain_Expertise", "Turnkey_Solution"]
+    }
+  },
+  {
+    "competitor_name": "RELEX Solutions",
+    "Summary_Angle": "They are a sprinter perfectly trained for the supermarket lane, but we are the marathon runner equipped for the complexities of your entire global supply chain.",
+    "Analysis": {
+      "competitor_approach": "RELEX is highly focused on retail and FMCG, excelling at optimizing supermarket shelf logic.",
+      "competitor_drawback": "While admirable, this 'over-focus' creates 'tunnel vision'. The challenges of a global, complex manufacturing and distribution network are not equivalent to managing supermarket shelves. Using retail logic for industrial-grade complexity is like a sprinter entering a marathon – enthusiastic but 'completely ill-equipped'.",
+      "futurmaster_contrast": "FuturMaster was designed from inception to address cross-industry, deep-seated supply chain complexity.",
+      "futurmaster_advantage": "FuturMaster respects the retail pace but is better equipped to 'navigate the depth of industrial manufacturing, the rigor of the pharmaceutical industry, and the volatility of high-tech industries'. It advises choosing a partner with a broader vision, one who can 'run the marathon' with them."
+    },
+    "Key_Tags": {
+      "Competitor_Weakness_Tag": ["Niche_Focus", "Tunnel_Vision", "Limited_Scope", "Not_for_Manufacturing_Complexity"],
+      "Futurmaster_Strength_Tag": ["Cross-Industry_Expertise", "Broad_Vision", "Handles_Deep_Complexity", "End-to-End_Solution"]
+    }
+  },
+  {
+    "competitor_name": "Blue Yonder",
+    "Summary_Angle": "They ask you to curate a museum of stitched-together legacy technologies; we give you command of a unified, modern battleship built for future challenges.",
+    "Analysis": {
+      "competitor_approach": "Blue Yonder (formerly JDA) possesses a large product 'museum' of 'legacy classics' acquired over decades. They attempt to stitch together software from different eras and technologies into a 'suite,' which is compared to tying together a 'steam engine, a transistor radio, and a smartphone' and expecting them to harmoniously play a symphony.",
+      "competitor_drawback": "The approach results in a lack of 'true power' due to the patchwork of 'historical fragments' rather than a unified, modern design. It implies clients would become 'museum curators' maintaining multiple antique technologies.",
+      "futurmaster_contrast": "FuturMaster believes true strength comes from a 'unified, modernized design'.",
+      "futurmaster_advantage": "FuturMaster is a 'native platform based on a unified, modern architecture,' where 'every module is built for collaboration'. The choice is simple: to be a 'museum curator' or to be a 'fleet commander' driving a 'modern battleship designed for future challenges'."
+    },
+    "Key_Tags": {
+      "Competitor_Weakness_Tag": ["Legacy_Tech", "Fragmented_Platform", "Patchwork_Solution", "High_Maintenance_Overhead"],
+      "Futurmaster_Strength_Tag": ["Unified_Modern_Platform", "Native_Architecture", "Designed_for_Collaboration", "Future-Proof"]
+    }
+  }
+]
