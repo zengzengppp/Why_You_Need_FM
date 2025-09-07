@@ -57,10 +57,29 @@ if (typeof window !== 'undefined') {
 }
 
 export default function Home() {
+  // Debug configuration from environment variables
+  const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE === 'true';
+  const startStage = process.env.NEXT_PUBLIC_START_STAGE || 'input';
+  const animationSpeed = process.env.NEXT_PUBLIC_ANIMATION_SPEED || 'normal';
+  const dataSource = process.env.NEXT_PUBLIC_DATA_SOURCE || 'mock';
+  const skipTransitions = process.env.NEXT_PUBLIC_SKIP_TRANSITIONS === 'true';
+  const testCompany = process.env.NEXT_PUBLIC_TEST_COMPANY || '';
+
+
+  // Animation speed multipliers
+  const getSpeedMultiplier = () => {
+    switch(animationSpeed) {
+      case 'fast': return 0.5;
+      case 'slow': return 2;
+      case 'skip': return 0.01;
+      default: return 1;
+    }
+  };
+
   // State management
   const [appState, setAppState] = useState({
-    currentStage: 'input',
-    companyName: '',
+    currentStage: startStage as 'input' | 'thinking' | 'ceremony' | 'report',
+    companyName: testCompany,
     report: null,
     activeTimers: [] as NodeJS.Timeout[]
   });
@@ -69,6 +88,14 @@ export default function Home() {
   const [generatedSections, setGeneratedSections] = useState<any[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [apiError, setApiError] = useState(false);
+
+  // Debug state
+  const [debugState, setDebugState] = useState({
+    currentStage: startStage,
+    animationSpeed: animationSpeed,
+    dataSource: dataSource,
+    skipTransitions: skipTransitions
+  });
 
   // Refs
   const companyNameInputRef = useRef<HTMLInputElement>(null);
@@ -135,15 +162,50 @@ export default function Home() {
   }, []);
 
   const addTimer = useCallback((callback: () => void, delay: number) => {
+    const speedMultiplier = getSpeedMultiplier();
+    const adjustedDelay = delay * speedMultiplier;
+    
     const timerId = setTimeout(() => {
       callback();
       const index = activeTimersRef.current.indexOf(timerId);
       if (index > -1) {
         activeTimersRef.current.splice(index, 1);
       }
-    }, delay);
+    }, adjustedDelay);
     activeTimersRef.current.push(timerId);
     return timerId;
+  }, []);
+
+  // URL parameter support and initialization
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const stage = urlParams.get('stage');
+      const animation = urlParams.get('animation'); 
+      const llm = urlParams.get('llm');
+      const company = urlParams.get('company');
+      
+      // Update debug state from URL parameters
+      if (stage && ['input', 'thinking', 'ceremony', 'report'].includes(stage)) {
+        setDebugState(prev => ({ ...prev, currentStage: stage }));
+        setAppState(prev => ({ ...prev, currentStage: stage as any }));
+      }
+      
+      if (animation && ['normal', 'fast', 'slow', 'skip'].includes(animation)) {
+        setDebugState(prev => ({ ...prev, animationSpeed: animation }));
+      }
+      
+      if (llm && ['mock', 'llm'].includes(llm)) {
+        setDebugState(prev => ({ ...prev, dataSource: llm }));
+      }
+      
+      if (company) {
+        setAppState(prev => ({ ...prev, companyName: company }));
+        if (companyNameInputRef.current) {
+          companyNameInputRef.current.value = company;
+        }
+      }
+    }
   }, []);
 
   const showStage = useCallback((stageName: string) => {
@@ -445,31 +507,37 @@ The choice is simple: become a platform researcher or a market leader.`
       animateThinkingSteps();
     }, 500);
 
-    // Call the API during the thinking phase
-    try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ companyName }),
-      });
+    // Call the API during the thinking phase (only if using LLM data source)
+    if (debugState.dataSource === 'llm') {
+      try {
+        const response = await fetch('/api/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ companyName }),
+        });
 
-      if (!response.ok) {
-        throw new Error('API call failed');
-      }
+        if (!response.ok) {
+          throw new Error('API call failed');
+        }
 
-      const data = await response.json();
-      setGeneratedSections(data.sections);
-      
-      if (data.fallback) {
+        const data = await response.json();
+        setGeneratedSections(data.sections);
+        
+        if (data.fallback) {
+          setApiError(true);
+        }
+      } catch (error) {
+        console.error('Error calling API:', error);
         setApiError(true);
+        // Set fallback data - will use mockReport
+        setGeneratedSections([]);
       }
-    } catch (error) {
-      console.error('Error calling API:', error);
-      setApiError(true);
-      // Set fallback data - will use mockReport
+    } else {
+      // Use mock data - set empty to trigger fallback
       setGeneratedSections([]);
+      setApiError(false);
     }
 
     setIsGenerating(false);
@@ -478,41 +546,8 @@ The choice is simple: become a platform researcher or a market leader.`
     addTimer(() => {
       startCeremony();
     }, 5500); // Keep ceremony start timing the same
-  }, [showStage, addTimer, animateThinkingSteps, startCeremony]);
+  }, [showStage, addTimer, animateThinkingSteps, startCeremony, debugState.dataSource]);
 
-  // Reset app
-  const resetApp = useCallback(() => {
-    if (companyNameInputRef.current) {
-      companyNameInputRef.current.value = '';
-    }
-    clearAllTimers();
-    
-    // Reset all state
-    setAppState({
-      currentStage: 'input',
-      companyName: '',
-      report: null,
-      activeTimers: []
-    });
-    setShowWorldwide(true);
-    setCurrentCityIndex(0);
-    setShowIndustries(false);
-    setVisibleIndustries([]);
-    setExpandedThinking(false);
-    setThinkingSteps([]);
-    setProgressWidth(0);
-    setCeremonyStep(0);
-    setReportTitlePosition('center');
-    setCeremonyAnimation({
-      titleVisible: false,
-      contentVisible: [],
-      backgroundTransition: false,
-      fadingOut: false
-    });
-    setGeneratedSections([]);
-    setIsGenerating(false);
-    setApiError(false);
-  }, [clearAllTimers]);
 
   // Handle key press
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -633,10 +668,107 @@ The choice is simple: become a platform researcher or a market leader.`
     };
   }, [clearAllTimers]);
 
+  // Debug toolbar functions
+  const jumpToStage = useCallback((stage: string) => {
+    clearAllTimers();
+    setAppState(prev => ({ ...prev, currentStage: stage as any }));
+    setDebugState(prev => ({ ...prev, currentStage: stage }));
+  }, [clearAllTimers]);
+
+  const toggleAnimationSpeed = useCallback(() => {
+    const speeds = ['normal', 'fast', 'slow', 'skip'];
+    const currentIndex = speeds.indexOf(debugState.animationSpeed);
+    const nextSpeed = speeds[(currentIndex + 1) % speeds.length];
+    setDebugState(prev => ({ ...prev, animationSpeed: nextSpeed }));
+  }, [debugState.animationSpeed]);
+
+  const toggleDataSource = useCallback(() => {
+    const newSource = debugState.dataSource === 'mock' ? 'llm' : 'mock';
+    setDebugState(prev => ({ ...prev, dataSource: newSource }));
+  }, [debugState.dataSource]);
+
+  const resetApp = useCallback(() => {
+    if (companyNameInputRef.current) {
+      companyNameInputRef.current.value = testCompany;
+    }
+    clearAllTimers();
+    
+    // Reset all state
+    setAppState({
+      currentStage: startStage as any,
+      companyName: testCompany,
+      report: null,
+      activeTimers: []
+    });
+    setShowWorldwide(true);
+    setCurrentCityIndex(0);
+    setShowIndustries(false);
+    setVisibleIndustries([]);
+    setExpandedThinking(false);
+    setThinkingSteps([]);
+    setProgressWidth(0);
+    setCeremonyStep(0);
+    setReportTitlePosition('center');
+    setCeremonyAnimation({
+      titleVisible: false,
+      contentVisible: [],
+      backgroundTransition: false,
+      fadingOut: false
+    });
+    setGeneratedSections([]);
+    setIsGenerating(false);
+    setApiError(false);
+  }, [clearAllTimers, startStage, testCompany]);
+
   return (
     <div className="min-h-screen font-sans" style={{ backgroundColor: '#F2F2F2' }}>
+      {/* Debug Toolbar - Only show in debug mode */}
+      {debugMode && (
+        <div className="fixed top-0 left-0 right-0 z-[9999] bg-black/90 text-white p-2 text-xs font-mono">
+          <div className="flex items-center justify-between max-w-7xl mx-auto">
+            <div className="flex items-center space-x-4">
+              <span className="text-yellow-400">🐛 DEBUG MODE</span>
+              <span>Stage: <strong>{appState.currentStage}</strong></span>
+              <span>Animation: <strong>{debugState.animationSpeed}</strong></span>
+              <span>Data: <strong>{debugState.dataSource}</strong></span>
+              <span>Company: <strong>{appState.companyName || 'None'}</strong></span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <select 
+                value={appState.currentStage} 
+                onChange={(e) => jumpToStage(e.target.value)}
+                className="bg-gray-800 text-white px-2 py-1 rounded text-xs"
+              >
+                <option value="input">Input</option>
+                <option value="thinking">Thinking</option>
+                <option value="ceremony">Ceremony</option>
+                <option value="report">Report</option>
+              </select>
+              <button 
+                onClick={toggleAnimationSpeed}
+                className="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded text-xs"
+              >
+                Speed: {debugState.animationSpeed}
+              </button>
+              <button 
+                onClick={toggleDataSource}
+                className="bg-green-600 hover:bg-green-700 px-2 py-1 rounded text-xs"
+              >
+                {debugState.dataSource.toUpperCase()}
+              </button>
+              <button 
+                onClick={resetApp}
+                className="bg-red-600 hover:bg-red-700 px-2 py-1 rounded text-xs"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Container */}
-      <div id="app" className="min-h-screen flex items-center justify-center">
+      <div id="app" className={`min-h-screen flex items-center justify-center ${debugMode ? 'pt-12' : ''}`}>
           
           {/* Stage 1: Input Interface */}
           {appState.currentStage === 'input' && (
