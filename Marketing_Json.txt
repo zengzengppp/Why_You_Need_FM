@@ -73,7 +73,28 @@
           "Collaboration & Scenario Planning",
           "Personalized Dashboards"
         ],
-        "Client_Benefit": "Achieve accurate and responsive demand plans by leveraging large amounts of internal and external data."
+        "Client_Benefit": "Achieve accurate and responsive demand plans by leveraging large amounts of internal and external data.",
+        "Applicable_Industries": [
+          "Packaged Food",
+          "Fresh Food",
+          "Beauty",
+          "Pharma",
+          "Retail Industry",
+          "Electronics",
+          "Apparel"
+        ],
+        "Solves_Pain_Points": [
+          "Inaccurate Forecasts",
+          "Demand Volatility (VUCA)",
+          "New Product Introduction Complexity",
+          "Poor Exception Management",
+          "Lack of Collaboration in Forecasting"
+        ],
+        "Key_Technologies": [
+          "Forecast at Scale technology",
+          "Machine Learning (ML)",
+          "Artificial Intelligence (AI)"
+        ]
       },
       {
         "module_name": "BLOOM SUPPLY PLANNING",
@@ -84,7 +105,27 @@
           "Semantic Network Graph for Holistic View",
           "Fully-Costed Supply Chain Model"
         ],
-        "Client_Benefit": "Achieve the lowest total cost-to-serve through optimized, data-driven supply chain decisions."
+        "Client_Benefit": "Achieve the lowest total cost-to-serve through optimized, data-driven supply chain decisions.",
+        "Applicable_Industries": [
+          "Industrial Manufacturing",
+          "Automotive & Transportation",
+          "Chemicals",
+          "Pharma",
+          "Packaged Food",
+          "Electronics"
+        ],
+        "Solves_Pain_Points": [
+          "High Inventory Costs",
+          "Poor On-Time Delivery / Service Levels",
+          "Supply Chain Disruptions",
+          "Network Inefficiency",
+          "High Cost-to-Serve",
+          "Long Planning Cycles"
+        ],
+        "Key_Technologies": [
+          "Digital Twin modelling",
+          "Global Optimization algorithms"
+        ]
       },
       {
         "module_name": "BLOOM TRADE PROMOTIONS X (TPx)",
@@ -95,7 +136,24 @@
           "AI-Powered Insights & Optimization",
           "Dynamic Dashboarding & Scenario Planning"
         ],
-        "Client_Benefit": "Optimize return on investment for trade promotions and achieve business targets."
+        "Client_Benefit": "Optimize return on investment for trade promotions and achieve business targets.",
+        "Applicable_Industries": [
+          "Packaged Food",
+          "Soft Drinks",
+          "Beauty",
+          "Retail Industry"
+        ],
+        "Solves_Pain_Points": [
+          "Low ROI on promotions",
+          "Inability to predict promotion uplift",
+          "Cannibalization effects hurting key products",
+          "Difficulty in achieving sales targets",
+          "Budget gaps between demand and sales plan"
+        ],
+        "Key_Technologies": [
+          "Machine Learning (ML)",
+          "Artificial Intelligence (AI)"
+        ]
       },
       {
         "module_name": "BLOOM SALES & BUDGET PLANNING",
@@ -105,7 +163,24 @@
           "Impact Dashboards (Margin, Revenue, Working Capital)",
           "Cross-functional Stakeholder Collaboration"
         ],
-        "Client_Benefit": "Make data-driven strategic decisions by understanding the financial impact of different go-to-market plans."
+        "Client_Benefit": "Make data-driven strategic decisions by understanding the financial impact of different go-to-market plans.",
+        "Applicable_Industries": [
+          "Retail Industry",
+          "Beauty",
+          "Pharma",
+          "Packaged Food",
+          "Apparel",
+          "Industrial Manufacturing"
+        ],
+        "Solves_Pain_Points": [
+          "Misalignment between strategy and budget",
+          "Lack of visibility on financial impacts of plans",
+          "Slow and manual budgeting process",
+          "Difficulty in collaborative scenario planning"
+        ],
+        "Key_Technologies": [
+          "Global Optimization algorithms"
+        ]
       }
     ],
     "integration_capabilities": [
@@ -113,14 +188,6 @@
       "Vertically-integrated long, mid, and short-term plans aligned with company strategy."
     ]
   },
-  "Technology_&_Differentiators": {
-    "core_technologies": [
-      "Machine Learning (ML)",
-      "Artificial Intelligence (AI)",
-      "Forecast at Scale technology",
-      "Digital Twin modelling",
-      "Global Optimization algorithms"
-    ],
     "key_differentiators": [
       "Forecasting at Scale with automated data cleansing and external variable analysis",
       "Smart algorithms for global optimization and vertical integration of planning horizons",
@@ -133,22 +200,6 @@
     "customer_base": "A customer community covering more than 600 customers in all industries.",
     "trust_level": "Trusted by world’s leading & fast-growing companies."
   },
-  "Target_Industries": [
-    "Packaged Food",
-    "Fresh Food",
-    "Alcoholic Drinks",
-    "Soft Drinks",
-    "Beauty",
-    "Pharma",
-    "Chemicals",
-    "Energy",
-    "Retail Industry",
-    "Electronics",
-    "Apparel",
-    "Industrial Manufacturing",
-    "Automotive & Transportation",
-    "Process Manufacturing"
-  ],
   "Client_Benefits": [
     "Achieve strategic competitive advantages",
     "Increase agility & resilience",

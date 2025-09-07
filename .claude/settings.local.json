@@ -77,7 +77,15 @@
       "Read(/C:\\Users\\zengch00\\FM_TEST\\Why_You_Need_FM\\futurmaster-poc\\nextjs-fm-poc\\src\\app/**)",
       "Read(/C:\\Users\\zengch00\\AppData\\Roaming\\Code\\User\\History\\7669669c/**)",
       "Read(/C:\\Users\\zengch00\\FM_TEST\\Why_You_Need_FM\\futurmaster-poc\\nextjs-fm-poc\\src\\app/**)",
-      "Read(/C:\\Users\\zengch00\\AppData\\Roaming\\Code\\User\\History\\63746187/**)"
+      "Read(/C:\\Users\\zengch00\\AppData\\Roaming\\Code\\User\\History\\63746187/**)",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_evaluate",
+      "mcp__playwright__browser_select_option",
+      "mcp__playwright__browser_close",
+      "Bash(start http://localhost:3003/?stage=report)",
+      "Bash(powershell:*)",
+      "Bash(del test-syntax.js)",
+      "Bash(start http://localhost:3003/?stage=ceremony)"
     ],
     "deny": [],
     "ask": []

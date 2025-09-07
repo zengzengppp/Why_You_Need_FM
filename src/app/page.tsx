@@ -68,8 +68,8 @@ export default function Home() {
 
   // Animation speed multipliers
   const getSpeedMultiplier = () => {
-    switch(animationSpeed) {
-      case 'fast': return 0.5;
+    switch(debugState.animationSpeed) {
+      case 'fast': return 0.1; // 调快5倍：从0.5改为0.1
       case 'slow': return 2;
       case 'skip': return 0.01;
       default: return 1;
@@ -109,9 +109,14 @@ export default function Home() {
   const [currentCityIndex, setCurrentCityIndex] = useState(0);
   const [showIndustries, setShowIndustries] = useState(false);
   const [visibleIndustries, setVisibleIndustries] = useState<number[]>([]);
+  const [visibleCities, setVisibleCities] = useState<number[]>([]);
   const [expandedThinking, setExpandedThinking] = useState(false);
   const [thinkingSteps, setThinkingSteps] = useState<any[]>([]);
   const [progressWidth, setProgressWidth] = useState(0);
+  const [animationCycle, setAnimationCycle] = useState(0);
+  const [llmResponseReceived, setLlmResponseReceived] = useState(false);
+  const [upperAnimationMode, setUpperAnimationMode] = useState<'cities' | 'industries'>('cities');
+  const [ceremonyStarted, setCeremonyStarted] = useState(false);
 
   // Direct progress bar update function
   const updateProgressBar = useCallback((percentage: number) => {
@@ -124,7 +129,10 @@ export default function Home() {
     setProgressWidth(percentage);
   }, []);
   const [ceremonyStep, setCeremonyStep] = useState(0);
-  const [reportTitlePosition, setReportTitlePosition] = useState('center');
+  const [reportTitlePosition, setReportTitlePosition] = useState('hidden');
+  const [finalTitlePosition, setFinalTitlePosition] = useState(0);
+  const titleRef = useRef(null);
+  const hiddenTitleRef = useRef(null);
   
   // Animation state for ceremony
   const [ceremonyAnimation, setCeremonyAnimation] = useState({
@@ -174,7 +182,7 @@ export default function Home() {
     }, adjustedDelay);
     activeTimersRef.current.push(timerId);
     return timerId;
-  }, []);
+  }, [debugState.animationSpeed]); // 添加依赖项，确保速度变化时函数会重新创建
 
   // URL parameter support and initialization
   useEffect(() => {
@@ -208,49 +216,51 @@ export default function Home() {
     }
   }, []);
 
+
   const showStage = useCallback((stageName: string) => {
     setAppState(prev => ({ ...prev, currentStage: stageName }));
   }, []);
 
-  // City animation - exact replica of original timing
+  // City animation - show all 6 cities cumulatively over 15 seconds
   const animateCities = useCallback(() => {
-    let index = 0;
-    const showNextCity = () => {
-      if (index >= Math.min(cities.length, 3)) return;
-      
-      setCurrentCityIndex(index);
-      
-      // Exact timing: 300ms fade-in delay + 500ms transition duration + 800ms between cities
+    setVisibleCities([]);
+    cities.forEach((_, index) => {
       addTimer(() => {
-        index++;
-        showNextCity();
-      }, 800);
-    };
-    
-    showNextCity();
+        setVisibleCities(prev => {
+          // Prevent duplicates
+          if (prev.includes(index)) return prev;
+          return [...prev, index];
+        });
+      }, index * 2500); // 2.5 seconds between each city
+    });
   }, [cities.length, addTimer]);
 
-  // Industry animation
+  // Industry animation - show cumulatively over 15 seconds (after cities phase)
   const animateIndustries = useCallback(() => {
+    setVisibleIndustries([]);
     industries.forEach((_, index) => {
       addTimer(() => {
-        setVisibleIndustries(prev => [...prev, index]);
-      }, index * 300);
+        setVisibleIndustries(prev => {
+          // Prevent duplicates
+          if (prev.includes(index)) return prev;
+          return [...prev, index];
+        });
+      }, index * 1875); // ~1.875 seconds between each industry
     });
   }, [addTimer]);
 
-  // Thinking steps creation
+  // Thinking steps creation - adjusted for 30-second completion
   const createThinkingSteps = useCallback((companyName: string) => {
     return [
-      { text: `I need to think how can FM help: '${companyName}'. Time to do some digging.`, duration: 1000 },
-      { text: `Searching the web for '${companyName}' supply chain challenges and goal...`, duration: 1200 },
-      { text: `Found it! Now I am going to match related FM modules, capacities`, duration: 1000 },
-      { text: `Now, let's see who in our success stories matches this client.`, duration: 800 },
-      { text: `Nice! I found that FM is perfect for this client, let me write down the reports`, duration: 1000 }
+      { text: `I need to think how can FM help: '${companyName}'. Time to do some digging.`, duration: 6000 },
+      { text: `Searching the web for '${companyName}' supply chain challenges and goal...`, duration: 6000 },
+      { text: `Found it! Now I am going to match related FM modules, capacities`, duration: 6000 },
+      { text: `Now, let's see who in our success stories matches this client.`, duration: 6000 },
+      { text: `Nice! I found that FM is perfect for this client, let me write down the reports`, duration: 6000 }
     ];
   }, []);
 
-  // Thinking animation
+  // Thinking animation - exactly 30 seconds total
   const animateCodeThinking = useCallback(() => {
     const steps = createThinkingSteps(appState.companyName);
     let currentStep = 0;
@@ -290,21 +300,75 @@ export default function Home() {
     showNextStep();
   }, [appState.companyName, createThinkingSteps, addTimer, updateProgressBar]);
 
+  // Upper animation cycle - 30 seconds with cities then industries
+  const startUpperAnimationCycle = useCallback(() => {
+    if (llmResponseReceived) return;
+    
+    // Reset states immediately to prevent duplicates
+    setShowWorldwide(true);
+    setShowIndustries(false);
+    setUpperAnimationMode('cities');
+    setVisibleCities([]);
+    setVisibleIndustries([]);
+    
+    // Start cities phase (0-15s)
+    addTimer(() => {
+      if (!llmResponseReceived) {
+        animateCities();
+      }
+    }, 100); // Small delay to ensure state reset
+    
+    // Switch to industries phase at 15s
+    addTimer(() => {
+      if (!llmResponseReceived) {
+        setShowWorldwide(false);
+        setShowIndustries(true);
+        setUpperAnimationMode('industries');
+        animateIndustries();
+      }
+    }, 15000);
+    
+    // Start next cycle at 30s
+    addTimer(() => {
+      if (!llmResponseReceived) {
+        setAnimationCycle(prev => prev + 1);
+        startUpperAnimationCycle();
+      }
+    }, 30000);
+  }, [llmResponseReceived, animateCities, animateIndustries, addTimer]);
+  
   // Main thinking animation controller
   const animateThinkingSteps = useCallback(() => {
-    // Start city animation
-    animateCities();
+    // Start upper animation cycle
+    startUpperAnimationCycle();
     
-    // Switch to industries after cities
-    addTimer(() => {
-      setShowWorldwide(false);
-      setShowIndustries(true);
-      animateIndustries();
-    }, 2400);
-    
-    // Start thinking steps immediately
+    // Start thinking steps independently (runs once for 30 seconds)
     animateCodeThinking();
-  }, [animateCities, animateIndustries, animateCodeThinking, addTimer]);
+  }, [startUpperAnimationCycle, animateCodeThinking]);
+
+  // Initialize animations when jumping to thinking stage
+  useEffect(() => {
+    if (appState.currentStage === 'thinking') {
+      // Reset thinking state and start animations
+      setShowWorldwide(true);
+      setCurrentCityIndex(0);
+      setShowIndustries(false);
+      setVisibleIndustries([]);
+      setVisibleCities([]);
+      setThinkingSteps([]);
+      setProgressWidth(0);
+      setAnimationCycle(0);
+      setLlmResponseReceived(false);
+      setUpperAnimationMode('cities');
+      setCeremonyStarted(false);
+      
+      // Start the thinking animation sequence
+      addTimer(() => {
+        animateThinkingSteps();
+      }, 500);
+    }
+  }, [appState.currentStage, addTimer, animateThinkingSteps]);
+
 
   // Get ceremony paragraphs - dynamic based on generated content or fallback
   const getCeremonyParagraphs = useCallback(() => {
@@ -359,51 +423,93 @@ export default function Home() {
 
   // Ceremony sequence
   const startCeremony = useCallback(() => {
+    // Prevent double initialization
+    if (ceremonyStarted) return;
+    setCeremonyStarted(true);
+    
+    // Clear any existing timers to prevent conflicts
+    clearAllTimers();
     showStage('ceremony');
     
-    const ceremonyParagraphs = getCeremonyParagraphs();
-    const ceremonySequence = [
-      ...ceremonyParagraphs.map((paragraph, index) => ({
-        duration: 3000, // Restored to original 3000ms timing
-        background: index % 2 === 0 ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)' : 'linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%)',
-        content: paragraph,
-        step: index
-      })),
-      {
-        duration: 2000, // Restored to original 2000ms timing
-        background: '#000000',
-        content: null,
-        animate: true,
-        step: ceremonyParagraphs.length
-      }
-    ];
-    
-    let currentStep = 0;
-    
-    const executeStep = () => {
-      if (currentStep >= ceremonySequence.length) {
-        // Start background transition animation
-        setCeremonyAnimation(prev => ({ ...prev, backgroundTransition: true }));
-        
-        // Ensure black background before animation starts
-        if (ceremonyRef.current) {
-          ceremonyRef.current.style.background = '#000000';
-          // Small delay to ensure black is rendered before animation starts
-          setTimeout(() => {
-            ceremonyRef.current?.classList.add('animate-black-to-white');
-          }, 50);
+    // Start with 2-second black screen
+    addTimer(() => {
+      const ceremonyParagraphs = getCeremonyParagraphs();
+      const ceremonySequence = [
+        ...ceremonyParagraphs.map((paragraph, index) => ({
+          duration: 15000, // Changed from 3000ms to 15000ms (15 seconds)
+          background: index % 2 === 0 ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)' : 'linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%)',
+          content: paragraph,
+          step: index
+        }))
+        // 移除额外的黑屏step，直接在最后一个paragraph完成后触发过渡
+      ];
+      
+      let currentStep = 0;
+      
+      const executeStep = () => {
+        if (currentStep >= ceremonySequence.length) {
+          // 所有paragraphs完成，直接触发background过渡到白色并显示report
+          setCeremonyAnimation(prev => ({ ...prev, backgroundTransition: true }));
+          
+          // Show report after transition (blackToWhite动画2秒)
+          addTimer(() => {
+            showMockReport();
+          }, 2000);
+          return;
         }
         
-        // Show report after transition - increased delay to see animation
+        // Reset animation state for new step - keep fadingOut true during transition gap
+        setCeremonyAnimation({
+          titleVisible: false,
+          contentVisible: [],
+          backgroundTransition: false,
+          fadingOut: true
+        });
+        
+        // Update step and start title fade in (reduced for smoother flow: 500ms → 300ms)
         addTimer(() => {
-          showMockReport();
-        }, 2000);
-        return;
-      }
+          setCeremonyStep(currentStep);
+          setCeremonyAnimation(prev => ({ ...prev, titleVisible: true, fadingOut: false }));
+        }, 300);
+        
+        // Content paragraphs fade in sequentially (调整: 增加0.8s让标题有足够阅读时间)
+        if (currentStep < ceremonyParagraphs.length) {
+          ceremonyParagraphs[currentStep].content.forEach((_, idx) => {
+            // 递减间隔: 第一段300ms，第二段250ms，第三段200ms，后续180ms
+            const intervals = [300, 250, 200, 180, 180, 180];
+            const baseDelay = 1000; // Reduced from 1700ms to 1000ms for smoother flow
+            const accumulatedDelay = intervals.slice(0, idx).reduce((sum, interval) => sum + interval, 0);
+            
+            addTimer(() => {
+              setCeremonyAnimation(prev => ({
+                ...prev,
+                contentVisible: [...prev.contentVisible, idx]
+              }));
+            }, baseDelay + accumulatedDelay);
+          });
+        }
+        
+        // Start fade out before next step begins (reduced fade out time: 1500ms → 800ms)
+        addTimer(() => {
+          setCeremonyAnimation(prev => ({ ...prev, fadingOut: true }));
+        }, ceremonySequence[currentStep].duration - 800);
+        
+        addTimer(() => {
+          currentStep++;
+          executeStep();
+        }, ceremonySequence[currentStep].duration);
+      };
       
-      setCeremonyStep(currentStep);
-      
-      // Reset animation state for new step - properly clear previous content
+      executeStep();
+    }, 2000); // 2-second initial delay
+  }, [getCeremonyParagraphs, addTimer, showStage]);
+
+  // Initialize ceremony when jumping to ceremony stage
+  useEffect(() => {
+    if (appState.currentStage === 'ceremony') {
+      // Reset ceremony state
+      setCeremonyStep(0);
+      setReportTitlePosition('hidden');
       setCeremonyAnimation({
         titleVisible: false,
         contentVisible: [],
@@ -411,36 +517,14 @@ export default function Home() {
         fadingOut: false
       });
       
-      // Title fade in first (restored to original timing)
-      addTimer(() => {
-        setCeremonyAnimation(prev => ({ ...prev, titleVisible: true }));
-      }, 300); // Restored to original 300ms
-      
-      // Content paragraphs fade in sequentially (restored timing)
-      if (currentStep < ceremonyParagraphs.length) {
-        ceremonyParagraphs[currentStep].content.forEach((_, idx) => {
-          addTimer(() => {
-            setCeremonyAnimation(prev => ({
-              ...prev,
-              contentVisible: [...prev.contentVisible, idx]
-            }));
-          }, 800 + idx * 300); // Restored: start after 800ms, then 300ms between paragraphs
-        });
+      // Only start ceremony if not already started (for debug toolbar jumps)
+      if (!ceremonyStarted) {
+        addTimer(() => {
+          startCeremony();
+        }, 500);
       }
-      
-      // Start fade out 500ms before next step begins (restored)
-      addTimer(() => {
-        setCeremonyAnimation(prev => ({ ...prev, fadingOut: true }));
-      }, ceremonySequence[currentStep].duration - 500); // Restored to original 500ms
-      
-      addTimer(() => {
-        currentStep++;
-        executeStep();
-      }, ceremonySequence[currentStep].duration);
-    };
-    
-    executeStep();
-  }, [getCeremonyParagraphs, addTimer, showStage]);
+    }
+  }, [appState.currentStage, ceremonyStarted, addTimer, startCeremony]);
 
   // Mock report data
   const mockReport = {
@@ -471,21 +555,22 @@ The choice is simple: become a platform researcher or a market leader.`
   // Show mock report
   const showMockReport = useCallback(() => {
     showStage('report');
+    setReportTitlePosition('hidden'); // Start hidden
     
-    // Title animation sequence - new timing for center hold + smooth transition
+    // Fade in to center (1.5s)
     addTimer(() => {
-      setReportTitlePosition('visible');
-    }, 200);
+      setReportTitlePosition('center');
+    }, 100);
     
-    // Hold in center for 1.5s, then start move to top animation (1.5s duration)
+    // Hold at center for 1s, then start uplift (100ms + 1.5s + 1s = 2.6s)
     addTimer(() => {
-      setReportTitlePosition('top');
-    }, 1700); // 200ms + 1500ms hold time
+      setReportTitlePosition('top'); // Uplift takes 1.5s
+    }, 2600);
     
-    // Final state after animation completes (1.5s animation duration)
+    // Switch to final positioning after uplift (2.6s + 1.5s = 4.1s)
     addTimer(() => {
-      setReportTitlePosition('final');
-    }, 3200); // 1700ms + 1500ms animation duration
+      setReportTitlePosition('final'); // Content fade in takes 1s
+    }, 4100);
   }, [showStage, addTimer]);
 
   // Generate report with LLM API call
@@ -500,6 +585,8 @@ The choice is simple: become a platform researcher or a market leader.`
     setAppState(prev => ({ ...prev, companyName }));
     setIsGenerating(true);
     setApiError(false);
+    setLlmResponseReceived(false);
+    setAnimationCycle(0);
     showStage('thinking');
     
     // Start the thinking animation
@@ -507,16 +594,27 @@ The choice is simple: become a platform researcher or a market leader.`
       animateThinkingSteps();
     }, 500);
 
+    // Simulate 40-second delay for testing
+    const simulateDelay = () => {
+      return new Promise(resolve => {
+        setTimeout(resolve, 40000); // 40 seconds
+      });
+    };
+
     // Call the API during the thinking phase (only if using LLM data source)
     if (debugState.dataSource === 'llm') {
       try {
-        const response = await fetch('/api/generate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ companyName }),
-        });
+        // For testing: wait for simulated delay AND actual API call
+        const [_, response] = await Promise.all([
+          simulateDelay(),
+          fetch('/api/generate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ companyName }),
+          })
+        ]);
 
         if (!response.ok) {
           throw new Error('API call failed');
@@ -535,17 +633,20 @@ The choice is simple: become a platform researcher or a market leader.`
         setGeneratedSections([]);
       }
     } else {
-      // Use mock data - set empty to trigger fallback
+      // Use mock data with 40-second delay for testing
+      await simulateDelay();
       setGeneratedSections([]);
       setApiError(false);
     }
 
+    // Mark LLM response as received and stop animations
+    setLlmResponseReceived(true);
     setIsGenerating(false);
     
-    // Start ceremony after thinking completes
+    // Start ceremony immediately after LLM response
     addTimer(() => {
       startCeremony();
-    }, 5500); // Keep ceremony start timing the same
+    }, 500);
   }, [showStage, addTimer, animateThinkingSteps, startCeremony, debugState.dataSource]);
 
 
@@ -669,19 +770,80 @@ The choice is simple: become a platform researcher or a market leader.`
     };
   }, [clearAllTimers]);
 
+  // Calculate final title position using hidden element
+  useEffect(() => {
+    if (appState.currentStage === 'report' && hiddenTitleRef.current) {
+      // Small delay to ensure layout is complete
+      setTimeout(() => {
+        if (hiddenTitleRef.current) {
+          const rect = hiddenTitleRef.current.getBoundingClientRect();
+          setFinalTitlePosition(rect.top);
+          console.log('Calculated final position:', rect.top);
+        }
+      }, 100);
+    }
+  }, [appState.currentStage]);
+
   // Debug toolbar functions
   const jumpToStage = useCallback((stage: string) => {
     clearAllTimers();
     setAppState(prev => ({ ...prev, currentStage: stage as any }));
     setDebugState(prev => ({ ...prev, currentStage: stage }));
-  }, [clearAllTimers]);
+    
+    // Initialize animations for direct stage jumps
+    if (stage === 'report') {
+      setReportTitlePosition('hidden');
+      addTimer(() => showMockReport(), 100);
+    }
+  }, [clearAllTimers, addTimer, showMockReport]);
 
   const toggleAnimationSpeed = useCallback(() => {
     const speeds = ['normal', 'fast', 'slow', 'skip'];
     const currentIndex = speeds.indexOf(debugState.animationSpeed);
     const nextSpeed = speeds[(currentIndex + 1) % speeds.length];
+    
+    // Clear all existing timers to prevent conflicts
+    clearAllTimers();
+    
+    // Update speed
     setDebugState(prev => ({ ...prev, animationSpeed: nextSpeed }));
-  }, [debugState.animationSpeed]);
+    
+    // Restart current stage with new speed  
+    const currentStage = appState.currentStage;
+    if (currentStage === 'ceremony') {
+      // Reset ceremony state and restart
+      setCeremonyStep(0);
+      setCeremonyAnimation({
+        titleVisible: false,
+        contentVisible: [],
+        backgroundTransition: false,
+        fadingOut: false
+      });
+      addTimer(() => {
+        startCeremony();
+      }, 100);
+    } else if (currentStage === 'report') {
+      // Reset and restart report stage
+      setReportTitlePosition('hidden');
+      addTimer(() => {
+        showMockReport();
+      }, 100);
+    } else if (currentStage === 'thinking') {
+      // Reset and restart thinking stage
+      setThinkingSteps([]);
+      setProgressWidth(0);
+      setVisibleCities([]);
+      setVisibleIndustries([]);
+      setShowWorldwide(true);
+      setShowIndustries(false);
+      setAnimationCycle(0);
+      setLlmResponseReceived(false);
+      setUpperAnimationMode('cities');
+      addTimer(() => {
+        animateThinkingSteps();
+      }, 500);
+    }
+  }, [debugState.animationSpeed, clearAllTimers, appState.currentStage, addTimer, startCeremony, showMockReport, animateThinkingSteps]);
 
   const toggleDataSource = useCallback(() => {
     const newSource = debugState.dataSource === 'mock' ? 'llm' : 'mock';
@@ -705,11 +867,16 @@ The choice is simple: become a platform researcher or a market leader.`
     setCurrentCityIndex(0);
     setShowIndustries(false);
     setVisibleIndustries([]);
+    setVisibleCities([]);
     setExpandedThinking(false);
     setThinkingSteps([]);
     setProgressWidth(0);
     setCeremonyStep(0);
     setReportTitlePosition('center');
+    setAnimationCycle(0);
+    setLlmResponseReceived(false);
+    setUpperAnimationMode('cities');
+    setCeremonyStarted(false);
     setCeremonyAnimation({
       titleVisible: false,
       contentVisible: [],
@@ -849,23 +1016,26 @@ The choice is simple: become a platform researcher or a market leader.`
                         FM is supporting you worldwide, in
                       </h2>
                       <div className="flex justify-center items-center min-h-[160px]">
-                        {currentCityIndex < Math.min(cities.length, 3) && (
-                          <div 
-                            className="flex flex-col items-center transition-all duration-500"
-                            style={{
-                              opacity: 1,
-                              transform: 'scale(1)',
-                              animation: 'cityFadeIn 0.8s ease-out'
-                            }}
-                          >
-                            <div className="mb-3">
-                              <img src={cities[currentCityIndex].svgFile} alt={cities[currentCityIndex].name} className="w-16 h-16 md:w-20 md:h-20" />
+                        <div className="flex flex-wrap justify-center gap-6 items-center">
+                          {visibleCities.map((cityIndex) => (
+                            <div 
+                              key={cityIndex}
+                              className="flex flex-col items-center transition-all duration-500"
+                              style={{
+                                opacity: 1,
+                                transform: 'scale(1)',
+                                animation: 'cityFadeIn 0.8s ease-out'
+                              }}
+                            >
+                              <div className="mb-3">
+                                <img src={cities[cityIndex].svgFile} alt={cities[cityIndex].name} className="w-16 h-16 md:w-20 md:h-20" />
+                              </div>
+                              <span className="text-base md:text-lg font-medium text-brand-text" style={{ fontFamily: 'Artifika, serif' }}>
+                                {cities[cityIndex].name}
+                              </span>
                             </div>
-                            <span className="text-base md:text-lg font-medium text-brand-text" style={{ fontFamily: 'Artifika, serif' }}>
-                              {cities[currentCityIndex].name}
-                            </span>
-                          </div>
-                        )}
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -996,10 +1166,12 @@ The choice is simple: become a platform researcher or a market leader.`
                 ceremonyAnimation.backgroundTransition ? 'animate-black-to-white' : ''
               }`}
               style={{ 
-                background: ceremonyAnimation.backgroundTransition ? '#000000' :
-                  ceremonyStep < getCeremonyParagraphs().length 
-                    ? (ceremonyStep % 2 === 0 ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)' : 'linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%)')
-                    : '#000000'
+                // 当backgroundTransition活跃时，不设置background，让CSS动画类完全控制
+                background: ceremonyAnimation.backgroundTransition 
+                  ? undefined 
+                  : ceremonyStep < getCeremonyParagraphs().length 
+                    ? '#1a1a1a'
+                    : 'linear-gradient(135deg, #000000 0%, #1a1a1a 100%)'
               }}>
               <div className="text-center max-w-4xl mx-auto px-6">
                 {(() => {
@@ -1007,13 +1179,14 @@ The choice is simple: become a platform researcher or a market leader.`
                   return ceremonyStep < ceremonyParagraphs.length && (
                     <div className="text-white max-w-3xl mx-auto">
                       <h2 
-                        className={`text-4xl md:text-5xl font-bold mb-8 text-center transition-all duration-500 ${
+                        className={`text-4xl md:text-5xl font-bold mb-8 text-center transition-all duration-[800ms] ${
                           ceremonyAnimation.fadingOut ? 'opacity-0 translate-y-[-20px]' :
-                          ceremonyAnimation.titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                          ceremonyAnimation.titleVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-12 scale-90'
                         }`}
                         style={{ 
                           fontFamily: 'Artifika, serif', 
-                          color: ceremonyStep % 2 === 0 ? '#f79d5c' : '#f3752b' 
+                          color: ceremonyStep % 2 === 0 ? '#f79d5c' : '#f3752b',
+                          transitionTimingFunction: 'cubic-bezier(0.23, 0, 0.32, 1)'
                         }}>
                         {ceremonyParagraphs[ceremonyStep].title.replace(/^#{1,6}\s*/, '')}
                       </h2>
@@ -1021,12 +1194,18 @@ The choice is simple: become a platform researcher or a market leader.`
                         {ceremonyParagraphs[ceremonyStep].content.map((p, idx) => (
                         <div 
                           key={idx} 
-                          className={`mb-4 transition-all duration-500 ${
-                            ceremonyAnimation.fadingOut ? 'opacity-0 translate-y-[-20px]' :
+                          className={`mb-4 transition-all duration-[800ms] ${
+                            ceremonyAnimation.fadingOut ? 'opacity-0 translate-y-[-20px] scale-95' :
                             ceremonyAnimation.contentVisible.includes(idx) 
-                              ? 'opacity-100 translate-y-0' 
-                              : 'opacity-0 translate-y-4'
+                              ? 'opacity-100 translate-y-0 scale-100' 
+                              : 'opacity-0 translate-y-8 scale-98'
                           }`}
+                          style={{
+                            transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)', // 更柔和的缓动函数
+                            willChange: 'transform, opacity', // 优化性能，防止微位移
+                            backfaceVisibility: 'hidden', // 防止渲染闪烁
+                            perspective: 1000 // 启用3D加速，减少位移问题
+                          }}
                         >
                           <ReactMarkdown
                             components={{
@@ -1050,36 +1229,63 @@ The choice is simple: become a platform researcher or a market leader.`
             </div>
           )}
 
-          {/* Stage 4: Static Report Interfaced */}
+          {/* Stage 4: Static Report Interface */}
           {appState.currentStage === 'report' && (
-            <div className="min-h-screen py-12 opacity-100 transition-opacity duration-1000" style={{ backgroundColor: '#F2F2F2' }}>
-              <div className="max-w-4xl mx-auto p-12 relative">
-                {/* Title with animation states */}
-                <div 
-                  className={`flex justify-center ${
-                    reportTitlePosition === 'center' ? 'fixed inset-x-0 opacity-0' :
-                    reportTitlePosition === 'visible' ? 'fixed inset-x-0 opacity-100' :
-                    reportTitlePosition === 'top' ? 'animate-title-center-to-top' :
-                    'relative opacity-100 pb-6 mb-8 text-center'
-                  }`}
-                  style={{
-                    top: reportTitlePosition === 'center' || reportTitlePosition === 'visible' ? '50%' :
-                         reportTitlePosition === 'top' || reportTitlePosition === 'final' ? undefined : 'auto',
-                    transform: reportTitlePosition === 'center' || reportTitlePosition === 'visible' ? 'translateY(-50%)' :
-                               reportTitlePosition === 'top' || reportTitlePosition === 'final' ? undefined : 'none'
-                  }}
+            <div
+              className="min-h-screen py-12 bg-[#F2F2F2] transition-opacity duration-1000"
+            >
+              {/* Title with animation states - independent container */}
+              <div
+                ref={titleRef}
+                className={`
+                  flex justify-center
+                  ${reportTitlePosition !== 'final' ? 'transform transition-all ease-[cubic-bezier(0.4,0,0.2,1)]' : ''}
+                  ${reportTitlePosition === 'hidden' || reportTitlePosition === 'center' ? 'duration-[1500ms]' : ''}
+                  ${reportTitlePosition === 'top' ? 'duration-[1500ms]' : ''}
+                  ${reportTitlePosition === 'hidden' ? 'opacity-0 translate-y-0 fixed inset-x-0 top-1/2 -translate-y-1/2' : ''}
+                  ${reportTitlePosition === 'center' ? 'opacity-100 translate-y-0 fixed inset-x-0 top-1/2 -translate-y-1/2' : ''}
+                  ${reportTitlePosition === 'top' ? 'opacity-100 fixed inset-x-0 transform-none' : ''}
+                  ${reportTitlePosition === 'final' ? 'relative opacity-100 mb-8 max-w-4xl mx-auto px-12' : ''}
+                `}
+                style={{
+                  top: reportTitlePosition === 'top' && finalTitlePosition > 0 
+                    ? `${finalTitlePosition}px` 
+                    : undefined
+                }}
+              >
+                <h1
+                  className="text-3xl font-medium text-brand-text"
+                  style={{ fontFamily: 'Artifika, serif' }}
                 >
-                  <h1 className="text-3xl font-medium text-brand-text" style={{ fontFamily: 'Artifika, serif' }}>
+                  Now you see why FM is the answer
+                </h1>
+              </div>
+
+              {/* Report Content - separate fade-in */}
+              <div className="max-w-4xl mx-auto px-12">
+                {/* Hidden reference element for position calculation - positioned where final title should be */}
+                <div
+                  ref={hiddenTitleRef}
+                  className="opacity-0 pointer-events-none relative mb-8 flex justify-center"
+                >
+                  <h1
+                    className="text-3xl font-medium text-brand-text"
+                    style={{ fontFamily: 'Artifika, serif' }}
+                  >
                     Now you see why FM is the answer
                   </h1>
                 </div>
                 
-                {/* Report Content */}
-                <div className={`space-y-8 transition-opacity duration-1000 ${
+                <div className={`space-y-8 transition-opacity duration-[1000ms] ${
                   reportTitlePosition === 'final' ? 'opacity-100' : 'opacity-0'
                 }`}>
                   {(() => {
-                    const reportSections = getCeremonyParagraphs();
+                    const reportSections = [
+                      { title: "Your Forecasts Are Guessing", content: mockReport.hook },
+                      { title: "Success Stories From The Real World", content: mockReport.parable },
+                      { title: "The FuturMaster Solution", content: mockReport.solution },
+                      { title: "Why Choose FuturMaster Over Others?", content: mockReport.decision }
+                    ];
                     const borderColors = ['border-brand-sandy', 'border-brand-pumpkin', 'border-brand-sandy', 'border-brand-pumpkin'];
                     
                     return reportSections.map((section, index) => (
@@ -1093,7 +1299,7 @@ The choice is simple: become a platform researcher or a market leader.`
                             prose-blockquote:border-l-brand-pumpkin prose-blockquote:text-brand-text
                             prose-hr:border-brand-text prose-hr:my-8">
                             <ReactMarkdown>
-                              {(Array.isArray(section.content) ? section.content.join('\n\n') : section.content) + (index < reportSections.length - 1 ? '\n\n---' : '')}
+                              {section.content + (index < reportSections.length - 1 ? '\n\n---' : '')}
                             </ReactMarkdown>
                           </div>
                         </section>
@@ -1103,21 +1309,21 @@ The choice is simple: become a platform researcher or a market leader.`
                 </div>
                 
                 {/* CTA Buttons */}
-                <div className={`mt-12 flex justify-center space-x-4 transition-opacity duration-1000 ${
+                <div className={`mt-12 flex justify-center space-x-4 transition-opacity duration-[1000ms] ${
                   reportTitlePosition === 'final' ? 'opacity-100' : 'opacity-0'
                 }`}>
                   <button className="px-8 py-3 bg-gradient-to-r from-brand-sandy to-brand-pumpkin text-white rounded-lg text-lg font-medium hover:shadow-xl hover:scale-[1.02] focus:ring-2 focus:ring-brand-sandy focus:ring-offset-2 transition-all duration-300">
                     Start Your Journey
                   </button>
-                  <button onClick={resetApp} className="px-8 py-3 border-2 border-brand-text text-brand-text rounded-lg text-lg font-medium hover:bg-brand-text hover:text-white transition-all duration-300">
+                  <button onClick={resetApp} className="px-8 py-3 border-2 border-brand-text text-brand-text rounded-lg text-lg font-medium hover:bg-border-text hover:text-white transition-all duration-300">
                     I Got Another Company
                   </button>
                 </div>
               </div>
             </div>
           )}
-
-        </div>
+        
+      </div>
     </div>
   );
 }
