@@ -599,15 +599,16 @@ The choice is simple: become a platform researcher or a market leader.`
         const style = window.getComputedStyle(el);
         const inlineStyle = el.getAttribute('style') || '';
         
-        // Remove elements with high z-index that are likely overlays
+        // Remove elements with high z-index that are likely overlays, but preserve debug toolbar
         if ((style.position === 'fixed' && 
-             (parseInt(style.zIndex) > 1000 || inlineStyle.includes('z-index'))) ||
+             (parseInt(style.zIndex) > 1000 || inlineStyle.includes('z-index')) &&
+             !el.textContent?.includes('DEBUG MODE')) ||
             el.textContent?.includes('React DevTools') ||
             el.textContent?.includes('Next.js Dev Tools') ||
             el.getAttribute('aria-label')?.includes('dev') ||
             el.getAttribute('aria-label')?.includes('Next.js')) {
           try {
-            if (el.parentNode && !el.closest('#app')) {
+            if (el.parentNode && !el.closest('#app') && !el.textContent?.includes('DEBUG MODE')) {
               el.parentNode.removeChild(el);
             }
           } catch (e) {
@@ -724,7 +725,7 @@ The choice is simple: become a platform researcher or a market leader.`
     <div className="min-h-screen font-sans" style={{ backgroundColor: '#F2F2F2' }}>
       {/* Debug Toolbar - Only show in debug mode */}
       {debugMode && (
-        <div className="fixed top-0 left-0 right-0 z-[9999] bg-black/90 text-white p-2 text-xs font-mono">
+        <div className="fixed top-0 left-0 right-0 bg-black/95 text-white p-2 text-xs font-mono shadow-lg border-b border-gray-600" style={{ zIndex: 999999 }}>
           <div className="flex items-center justify-between max-w-7xl mx-auto">
             <div className="flex items-center space-x-4">
               <span className="text-yellow-400">🐛 DEBUG MODE</span>
@@ -737,7 +738,7 @@ The choice is simple: become a platform researcher or a market leader.`
               <select 
                 value={appState.currentStage} 
                 onChange={(e) => jumpToStage(e.target.value)}
-                className="bg-gray-800 text-white px-2 py-1 rounded text-xs"
+                className="bg-gray-800 text-white px-2 py-1 rounded text-xs hover:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-yellow-400"
               >
                 <option value="input">Input</option>
                 <option value="thinking">Thinking</option>
@@ -746,19 +747,19 @@ The choice is simple: become a platform researcher or a market leader.`
               </select>
               <button 
                 onClick={toggleAnimationSpeed}
-                className="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded text-xs"
+                className="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded text-xs transition-colors duration-150 focus:outline-none focus:ring-1 focus:ring-blue-300"
               >
                 Speed: {debugState.animationSpeed}
               </button>
               <button 
                 onClick={toggleDataSource}
-                className="bg-green-600 hover:bg-green-700 px-2 py-1 rounded text-xs"
+                className="bg-green-600 hover:bg-green-700 px-2 py-1 rounded text-xs transition-colors duration-150 focus:outline-none focus:ring-1 focus:ring-green-300"
               >
                 {debugState.dataSource.toUpperCase()}
               </button>
               <button 
                 onClick={resetApp}
-                className="bg-red-600 hover:bg-red-700 px-2 py-1 rounded text-xs"
+                className="bg-red-600 hover:bg-red-700 px-2 py-1 rounded text-xs transition-colors duration-150 focus:outline-none focus:ring-1 focus:ring-red-300"
               >
                 Reset
               </button>
