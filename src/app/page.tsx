@@ -3,6 +3,137 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 
+// Smart content splitting that preserves markdown structure
+const smartSplitContent = (content: string) => {
+  if (!content || typeof content !== 'string') return [content];
+  
+  const lines = content.split('\n');
+  const chunks = [];
+  let currentChunk = [];
+  let inList = false;
+  let inTable = false;
+  let inCodeBlock = false;
+  let inBlockquote = false;
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    const nextLine = i < lines.length - 1 ? lines[i + 1].trim() : '';
+    
+    // Detect code blocks
+    if (line.startsWith('```')) {
+      inCodeBlock = !inCodeBlock;
+      currentChunk.push(lines[i]);
+      continue;
+    }
+    
+    // If in code block, add everything
+    if (inCodeBlock) {
+      currentChunk.push(lines[i]);
+      continue;
+    }
+    
+    // Detect tables
+    if (line.includes('|') && (line.split('|').length > 2 || nextLine.includes('|'))) {
+      inTable = true;
+      currentChunk.push(lines[i]);
+      continue;
+    }
+    
+    // Exit table when no more | characters
+    if (inTable && !line.includes('|') && line !== '') {
+      inTable = false;
+      // End current chunk and start new one
+      if (currentChunk.length > 0) {
+        chunks.push(currentChunk.join('\n').trim());
+        currentChunk = [];
+      }
+      currentChunk.push(lines[i]);
+      continue;
+    }
+    
+    if (inTable) {
+      currentChunk.push(lines[i]);
+      continue;
+    }
+    
+    // Detect blockquotes
+    if (line.startsWith('>')) {
+      inBlockquote = true;
+      currentChunk.push(lines[i]);
+      continue;
+    }
+    
+    if (inBlockquote && !line.startsWith('>') && line !== '') {
+      inBlockquote = false;
+      // End current chunk
+      if (currentChunk.length > 0) {
+        chunks.push(currentChunk.join('\n').trim());
+        currentChunk = [];
+      }
+      currentChunk.push(lines[i]);
+      continue;
+    }
+    
+    if (inBlockquote) {
+      currentChunk.push(lines[i]);
+      continue;
+    }
+    
+    // Detect lists (numbered or bulleted)
+    const isListItem = /^(\d+\.|\-|\*|\+)\s/.test(line);
+    
+    if (isListItem) {
+      inList = true;
+      currentChunk.push(lines[i]);
+      continue;
+    }
+    
+    // If we were in a list and hit non-list content
+    if (inList && !isListItem && line !== '') {
+      inList = false;
+      // End current chunk and start new one
+      if (currentChunk.length > 0) {
+        chunks.push(currentChunk.join('\n').trim());
+        currentChunk = [];
+      }
+      currentChunk.push(lines[i]);
+      continue;
+    }
+    
+    if (inList) {
+      currentChunk.push(lines[i]);
+      continue;
+    }
+    
+    // Empty line - potential paragraph break
+    if (line === '') {
+      // Single empty line can be a paragraph separator if not in special structures
+      if (!inList && !inTable && !inBlockquote && !inCodeBlock) {
+        // This is a paragraph break, end current chunk
+        if (currentChunk.length > 0) {
+          chunks.push(currentChunk.join('\n').trim());
+          currentChunk = [];
+        }
+        continue;
+      } else {
+        // Keep empty line in current chunk when in special structures
+        currentChunk.push(lines[i]);
+        continue;
+      }
+    }
+    
+    // Regular content line
+    currentChunk.push(lines[i]);
+  }
+  
+  // Add any remaining content
+  if (currentChunk.length > 0) {
+    chunks.push(currentChunk.join('\n').trim());
+  }
+  
+  return chunks.filter(chunk => chunk && chunk.trim());
+};
+
 // Comprehensive console message suppression
 if (typeof window !== 'undefined') {
   const originalConsoleInfo = console.info;
@@ -401,14 +532,15 @@ export default function Home() {
   }, [appState.currentStage, addTimer, animateThinkingSteps]);
 
 
+
   // Get ceremony paragraphs - dynamic based on generated content or fallback
   const getCeremonyParagraphs = useCallback(() => {
     if (generatedSections.length >= 4) {
-      // Use generated content, split content into paragraphs
+      // Use generated content, smart split content preserving markdown structure
       return generatedSections.map(section => ({
         title: section.title,
         content: typeof section.content === 'string' 
-          ? section.content.split('\n\n').filter(p => p.trim())
+          ? smartSplitContent(section.content)
           : Array.isArray(section.content) 
             ? section.content.filter(p => p.trim())
             : [section.content]
@@ -509,7 +641,15 @@ export default function Home() {
             // 递减间隔: 第一段300ms，第二段250ms，第三段200ms，后续180ms
             const intervals = [300, 250, 200, 180, 180, 180];
             const baseDelay = 1000; // Reduced from 1700ms to 1000ms for smoother flow
-            const accumulatedDelay = intervals.slice(0, idx).reduce((sum, interval) => sum + interval, 0);
+            
+            // Extend intervals array dynamically for any number of paragraphs
+            const getInterval = (index) => {
+              if (index < intervals.length) return intervals[index];
+              return 180; // Default 180ms for paragraphs beyond the predefined intervals
+            };
+            
+            const accumulatedDelay = Array.from({length: idx}, (_, i) => getInterval(i))
+              .reduce((sum, interval) => sum + interval, 0);
             
             addTimer(() => {
               setCeremonyAnimation(prev => ({
@@ -581,7 +721,25 @@ FuturMaster is different. We are **supply chain experts**. We don't hand you a r
 The choice is simple: become a platform researcher or a market leader.`
   };
 
-  // Enhanced markdown processor for robust LLM output handling
+  // Get report sections - dynamic based on generated content or fallback
+  const getReportSections = useCallback(() => {
+    if (generatedSections.length >= 4) {
+      // Use generated content from LLM
+      return generatedSections.map(section => ({
+        title: section.title.replace(/^#{1,6}\s*/, ''), // Remove markdown headers
+        content: section.content
+      }));
+    }
+    
+    // Fallback to mock report with dynamic company name
+    const companyName = appState.companyName || 'your company';
+    return [
+      { title: "Your Forecasts Are Guessing", content: mockReport.hook.replace(/Aesop/g, companyName) },
+      { title: "Success Stories From The Real World", content: mockReport.parable },
+      { title: "The FuturMaster Solution", content: mockReport.solution },
+      { title: "Why Choose FuturMaster Over Others?", content: mockReport.decision }
+    ];
+  }, [generatedSections, appState.companyName]);
 
   // Show mock report
   const showMockReport = useCallback(() => {
@@ -625,27 +783,27 @@ The choice is simple: become a platform researcher or a market leader.`
       animateThinkingSteps();
     }, 500);
 
-    // Simulate 40-second delay for testing
-    const simulateDelay = () => {
-      return new Promise(resolve => {
-        setTimeout(resolve, 40000); // 40 seconds
+    // Create timeout promise for LLM API calls
+    const createTimeoutPromise = (timeoutMs: number) => {
+      return new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('API timeout')), timeoutMs);
       });
     };
 
     // Call the API during the thinking phase (only if using LLM data source)
     if (debugState.dataSource === 'llm') {
       try {
-        // For testing: wait for simulated delay AND actual API call
-        const [_, response] = await Promise.all([
-          simulateDelay(),
+        // Race between API call and timeout (60 seconds max)
+        const response = await Promise.race([
           fetch('/api/generate', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({ companyName }),
-          })
-        ]);
+          }),
+          createTimeoutPromise(60000) // 60 second timeout
+        ]) as Response;
 
         if (!response.ok) {
           throw new Error('API call failed');
@@ -664,8 +822,8 @@ The choice is simple: become a platform researcher or a market leader.`
         setGeneratedSections([]);
       }
     } else {
-      // Use mock data with 40-second delay for testing
-      await simulateDelay();
+      // For mock mode, wait at least 5 seconds to show thinking animation
+      await new Promise(resolve => setTimeout(resolve, 5000));
       setGeneratedSections([]);
       setApiError(false);
     }
@@ -1336,12 +1494,7 @@ The choice is simple: become a platform researcher or a market leader.`
                   reportTitlePosition === 'final' ? 'opacity-100' : 'opacity-0'
                 }`}>
                   {(() => {
-                    const reportSections = [
-                      { title: "Your Forecasts Are Guessing", content: mockReport.hook },
-                      { title: "Success Stories From The Real World", content: mockReport.parable },
-                      { title: "The FuturMaster Solution", content: mockReport.solution },
-                      { title: "Why Choose FuturMaster Over Others?", content: mockReport.decision }
-                    ];
+                    const reportSections = getReportSections();
                     const borderColors = ['border-brand-sandy', 'border-brand-pumpkin', 'border-brand-sandy', 'border-brand-pumpkin'];
                     
                     return reportSections.map((section, index) => (

@@ -87,7 +87,9 @@
       "Bash(del test-syntax.js)",
       "Bash(start http://localhost:3003/?stage=ceremony)",
       "Bash(mkdir:*)",
-      "Bash(start http://localhost:3003/?stage=thinking)"
+      "Bash(start http://localhost:3003/?stage=thinking)",
+      "Bash(del test-json-parsing.js)",
+      "Bash(start http://localhost:3003/test_output)"
     ],
     "deny": [],
     "ask": []

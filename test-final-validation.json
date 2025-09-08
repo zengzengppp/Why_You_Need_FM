@@ -1,0 +1,44 @@
+{
+  "test_cases": {
+    "nike_first_section": {
+      "content": "Nike is not a company. It's a statement. Speed. Performance. Victory. Your brand is built on athletes who break the limits of possibility.\n\nBut your supply chain wears concrete shoes.\n\nYour brilliant Direct-to-Consumer strategy demands a sprinter's agility, yet your planning is stuck at a marathoner's pace. You face a battlefield of thousands of SKUs, vicious seasonality, and trends that die before your containers cross the ocean. You are trying to win the future while being chained to the past's processes.",
+      "expected_chunks": 3,
+      "critical_content": "Your brilliant Direct-to-Consumer strategy demands",
+      "description": "Nike first section that was missing content in ceremony"
+    },
+    "numbered_list_with_conclusion": {
+      "content": "Your competitors will offer you two losing strategies:\n\n1. **SAP IBP** will sell you a 'Comprehensive Platform'—complex and expensive.\n\n2. **Oracle ASCP** offers 'Integrated Planning'—rigid and one-size-fits-all.\n\nThe choice is simple: Choose FuturMaster for agility and precision.",
+      "expected_chunks": 3,
+      "critical_content": "The choice is simple: Choose FuturMaster",
+      "description": "Numbered list followed by conclusion paragraph"
+    },
+    "mixed_content_complex": {
+      "content": "Introduction paragraph.\n\nKey benefits:\n- Benefit 1\n- Benefit 2\n- Benefit 3\n\nAfter the list conclusion.\n\n> Important blockquote here\n\nFinal paragraph content.",
+      "expected_chunks": 5,
+      "critical_content": "After the list conclusion",
+      "description": "Complex mixed content with lists, blockquotes, and conclusions"
+    },
+    "table_with_content": {
+      "content": "Here's a comparison:\n\n| Feature | Us | Them |\n|---------|----|----- |\n| Speed | Fast | Slow |\n| Quality | High | Low |\n\nThis table shows our advantage clearly.\n\nNext paragraph here.",
+      "expected_chunks": 3,
+      "critical_content": "This table shows our advantage clearly",
+      "description": "Table followed by explanatory content"
+    }
+  },
+  "validation_instructions": [
+    "1. Go to http://localhost:3003/test_output",
+    "2. Paste each test case content into the JSON input box",
+    "3. Click 'Parse JSON' to process",
+    "4. Click 'Test Ceremony Display' to see ceremony rendering",
+    "5. Verify all expected chunks appear and critical content is visible",
+    "6. Check that numbered lists, tables, and blockquotes render correctly"
+  ],
+  "fixed_issues": [
+    "✅ Smart content splitting preserves markdown structures",
+    "✅ Numbered lists stay together as single chunks", 
+    "✅ Content after lists (conclusions) is preserved",
+    "✅ Tables don't break into fragments",
+    "✅ Blockquotes remain intact",
+    "✅ All content appears in ceremony animation"
+  ]
+}

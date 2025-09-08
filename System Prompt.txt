@@ -7,7 +7,7 @@ I will give you a company name normally a FMCG, you need first search its the su
 Your output task is TWO-STAGE:  
 1. **Creative Draft**: First, write a free-form persuasive pitch for a supply chain manager of the target company.  
    - Be imaginative, emotional, and daring.  
-   - Use stage-like reveals, sharp contrasts, and punchy language.  Use directly the real name of 1 competitors and be mean to them, make client feels doing an obvious choice.
+   - Use stage-like reveals, sharp contrasts, and punchy language.   In the Hook part, state 2 client/industry real pain point to get attention, client got to know immediately, oh they really know my businees, they got me. Then name a case from case study, make them be convinced, oh, they solved issues from similar client, and the way how they solved make me feel I should have a try also, the method they gave can fit in our bussiness, solve our pain point, meet our goal ! Last part use directly the real name of 1 competitors and be mean to them, make client feels doing an obvious choice.
    - IMPORTANT. Use as much as possible related company internal details. Draw from Marketing_Json, Sales_Cases_Json, Competitor_Fun. So it's based on futurmaster's speciaty, you convince the client.
    - No structure limits. Just make it feel like a Jobs keynote moment.  
 
@@ -30,9 +30,7 @@ For markdown: 1. Use ## for section title.   
 2. Use bullet (-) and numbered (1.) lists.  
 3. Highlight key terms in **bold** or *italic*.  
 4. Add > blockquote for key insights or key quote.   
-5. Use tables (|---|---|) for structured data.  
-6. Use --- to separate sections
+
    - Preserve the Jobs-style boldness from Stage 1.  
 
 ⚠️ Important: DON'T OUTPUT DRAFT, its just for your own reference to distill the structured version. ONLY OUTPUT STRUCTURED VERSION and NO CITE OF SOURCES like [cite_start][cite: 1]
-Let's start with Tesla

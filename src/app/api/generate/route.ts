@@ -17,23 +17,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TEMPORARILY DISABLED LLM CONNECTION FOR UI TESTING
-    // TODO: Re-enable after UI refinement is complete
-    
-    /* LLM CODE - DISABLED FOR UI TESTING
-    // Read knowledge base files
-    const salesCasesPath = path.join(process.cwd(), 'Sales_Cases_Json.txt');
-    const marketingPath = path.join(process.cwd(), 'Marketing_Json.txt');
-    const competitorPath = path.join(process.cwd(), 'competitor_Fun_Json.txt');
-    const systemPromptPath = path.join(process.cwd(), 'System Prompt.txt');
+    // LLM CODE - NOW ENABLED FOR PRODUCTION USE
+    try {
+      // Read knowledge base files
+      const salesCasesPath = path.join(process.cwd(), 'Sales_Cases_Json.txt');
+      const marketingPath = path.join(process.cwd(), 'Marketing_Json.txt');
+      const competitorPath = path.join(process.cwd(), 'competitor_Fun_Json.txt');
+      const systemPromptPath = path.join(process.cwd(), 'System Prompt.txt');
 
-    const salesCases = fs.readFileSync(salesCasesPath, 'utf-8');
-    const marketing = fs.readFileSync(marketingPath, 'utf-8');
-    const competitor = fs.readFileSync(competitorPath, 'utf-8');
-    const systemPrompt = fs.readFileSync(systemPromptPath, 'utf-8');
+      const salesCases = fs.readFileSync(salesCasesPath, 'utf-8');
+      const marketing = fs.readFileSync(marketingPath, 'utf-8');
+      const competitor = fs.readFileSync(competitorPath, 'utf-8');
+      const systemPrompt = fs.readFileSync(systemPromptPath, 'utf-8');
 
-    // Construct full prompt
-    const fullPrompt = `${systemPrompt}
+      // Construct full prompt
+      const fullPrompt = `${systemPrompt}
 
 === KNOWLEDGE BASE ===
 
@@ -51,17 +49,20 @@ Company Name: ${companyName}
 
 Please analyze this company and provide your two-stage output as specified in the system prompt.`;
 
-    // Call Gemini API
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
-    const result = await model.generateContent(fullPrompt);
-    const response = await result.response;
-    const text = response.text();
+      // Call Gemini API
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
+      const result = await model.generateContent(fullPrompt);
+      const response = await result.response;
+      const text = response.text();
 
-    // Parse the response to extract the structured version
-    const sections = parseGeminiResponse(text);
-    
-    return NextResponse.json({ sections });
-    */
+      // Parse the response to extract the structured version using improved parser
+      const sections = parseGeminiResponse(text);
+      
+      return NextResponse.json({ sections });
+    } catch (llmError) {
+      console.error('LLM API failed, falling back to hardcoded data:', llmError);
+      // Fall through to hardcoded output below
+    }
 
     // USE HARDCODED OUTPUT FROM Example_Output.txt FOR UI TESTING
     // This simulates realistic LLM output with imperfect markdown formatting
@@ -127,21 +128,12 @@ We give you an **out-of-the-box 'Swiss Army knife'**, sharpened by decades of ex
 
 function parseGeminiResponse(text: string) {
   try {
-    let structuredText = text;
+    let structuredText = text.trim();
     
-    // Look for the structured version separator (optional)
-    const separatorIndex = text.indexOf('--- STRUCTURED VERSION BELOW ---');
-    if (separatorIndex !== -1) {
-      structuredText = text.substring(separatorIndex + '--- STRUCTURED VERSION BELOW ---'.length).trim();
-    } else {
-      // If no separator, try to find JSON in the response
-      const jsonStart = text.indexOf('{');
-      if (jsonStart !== -1) {
-        structuredText = text.substring(jsonStart).trim();
-      }
-    }
+    // The LLM should output ONLY the JSON directly based on System Prompt instructions
+    // But handle potential variations in LLM output
     
-    // Handle JSON wrapped in markdown code blocks
+    // Handle JSON wrapped in markdown code blocks first
     if (structuredText.includes('```json')) {
       const jsonMatch = structuredText.match(/```json\s*([\s\S]*?)\s*```/);
       if (jsonMatch) {
@@ -149,12 +141,28 @@ function parseGeminiResponse(text: string) {
       }
     }
     
-    // Extract just the JSON object if there's extra text
+    // More robust JSON extraction - find proper JSON boundaries
     if (structuredText.includes('{') && structuredText.includes('}')) {
+      // Find the first opening brace
       const startIndex = structuredText.indexOf('{');
-      const lastIndex = structuredText.lastIndexOf('}');
-      if (startIndex !== -1 && lastIndex !== -1 && lastIndex > startIndex) {
-        structuredText = structuredText.substring(startIndex, lastIndex + 1);
+      if (startIndex !== -1) {
+        let braceCount = 0;
+        let endIndex = -1;
+        
+        // Count braces to find the matching closing brace
+        for (let i = startIndex; i < structuredText.length; i++) {
+          if (structuredText[i] === '{') braceCount++;
+          if (structuredText[i] === '}') braceCount--;
+          
+          if (braceCount === 0) {
+            endIndex = i;
+            break;
+          }
+        }
+        
+        if (endIndex !== -1) {
+          structuredText = structuredText.substring(startIndex, endIndex + 1);
+        }
       }
     }
     

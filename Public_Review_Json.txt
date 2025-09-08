@@ -1,102 +1,146 @@
 {
-  "reviews": [
+  "FuturMaster_Evidence_Base": [
     {
-      "id": "GI-PEER-2025",
-      "source_name": "Gartner Peer Insights – FuturMaster (Bloom Platform)",
-      "source_type": "peer_insights",
-      "url": "https://www.gartner.com/reviews/market/supply-chain-planning-solutions/vendor/futurmaster/product/bloom-platform",
-      "published_date": null,
-      "accessed_date": "2025-09-08",
-      "author": "Multiple verified users",
-      "rating": 4.8,
-      "review_count": 93,
-      "quote": "provides scalable and cost-effective options, operating on a global scale",
-      "summary": "Users value Bloom’s scalability, global deployment, integrated planning and cost-effective modular licensing.",
-      "tags": ["scalability","global","modular_pricing","demand_planning"],
-      "credibility_score": 0.90,
-      "extracted_fields": {
-        "pros": ["scalable","cost-effective","global deployment","integrated planning"],
-        "cons": []
+      "Evidence_ID": "GARTNER-MQ-2023",
+      "Claim_Support_Tags": [
+        "Analyst_Validation",
+        "Gartner",
+        "Pricing_Model",
+        "Customer_Satisfaction",
+        "Strategic_Partnership"
+      ],
+      "Evidence_Quote": "Its strengths in the market include positive customer reports, a straightforward pricing model based on modules and the number of users, and its Diagnostic-Predictive-Value framework, which can help ensure that client strategies are understood and integrated correctly.",
+      "Source_Details": {
+        "name": "SolutionsReview Summary of Gartner 2023 Magic Quadrant for Supply Chain Planning",
+        "type": "Analyst Report Summary",
+        "url": "https://solutionsreview.com/supply-chain-management/whats-changed-2023-magic-quadrant-for-supply-chain-planning-solutions/",
+        "context": "This article details FuturMaster's inclusion and strengths in the official 2023 Gartner MQ report. Accessed on 2025-09-08."
       },
-      "notes": "Peer Insights aggregate page shows 4.8/5 from 93 reviews." 
+      "Summary": "Gartner's 2023 Magic Quadrant officially recognizes FuturMaster's strengths, highlighting their high customer satisfaction, transparent and straightforward pricing model, and a strategic framework that ensures successful client integration."
     },
     {
-      "id": "MQ-2016-GARTNER",
-      "source_name": "FuturMaster Press Release – Gartner MQ 2016",
-      "source_type": "analyst_report",
-      "url": "https://www.futurmaster.com/press-releases/events-webinars-the-research-company-gartner-places-futurmaster-in-the-2016-magic-quadrant-for-supply-chain-planning-system-of-record",
-      "published_date": "2016-02-08",
-      "accessed_date": "2025-09-08",
-      "author": "FuturMaster Press",
-      "rating": null,
-      "review_count": null,
-      "quote": "is positioned among the niche players",
-      "summary": "FuturMaster was positioned as a 'Niche Player' in the Gartner 2016 Magic Quadrant for supply chain planning systems of record, recognized for APS strengths in food/CPG verticals.",
-      "tags": ["magic_quadrant","niche_player","APS","CPG"],
-      "credibility_score": 0.95,
-      "extracted_fields": {
-        "strengths": ["APS fit for CPG/food"],
-        "weaknesses": ["lower visibility vs leaders"]
+      "Evidence_ID": "PEER-COMPETE-BLUEYONDER-2025",
+      "Claim_Support_Tags": [
+        "Competitive_Advantage",
+        "Customer_Support",
+        "Ease_of_Implementation",
+        "Vendor_Relationship",
+        "Blue_Yonder"
+      ],
+      "Evidence_Quote": "When comparing FuturMaster to their top 5 competitors, on average, reviewers rated FuturMaster better on Service & Support. Reviewers also felt that FuturMaster was easier to integrate and deploy, and better at evaluation and contracting.",
+      "Source_Details": {
+        "name": "Gartner Peer Insights - FuturMaster vs. Blue Yonder",
+        "type": "Peer Review Competitive Comparison",
+        "url": "https://www.gartner.com/reviews/market/supply-chain-planning-solutions/vendor/futurmaster/product/bloom-platform/compare/futurmaster-vs-blue-yonder",
+        "context": "Direct comparison based on verified user reviews. Top competitors in the comparison set include Blue Yonder, SAP, Oracle, and Infor. Accessed on 2025-09-08."
       },
-      "notes": "Statement from vendor press referencing Gartner MQ placement." 
+      "Summary": "Verified users on Gartner Peer Insights rate FuturMaster as superior to major competitors like Blue Yonder in critical areas, specifically highlighting better customer support, easier implementation, and a more favorable contracting process."
     },
     {
-      "id": "SR-2023",
-      "source_name": "Solutions Review – 2023 MQ Analysis",
-      "source_type": "industry_media",
-      "url": "https://solutionsreview.com/enterprise-resource-planning/whats-changed-2023-magic-quadrant-for-supply-chain-planning-solutions/",
-      "published_date": "2023-03-01",
-      "accessed_date": "2025-09-08",
-      "author": "Solutions Review",
-      "rating": null,
-      "review_count": null,
-      "quote": "end-to-end supply chain planning capabilities",
-      "summary": "Solutions Review notes that with the Bloom Platform, midsize and large CPG and F&B organizations gain access to end-to-end supply chain planning, especially demand and replenishment planning.",
-      "tags": ["end_to_end","demand_planning","CPG","F&B"],
-      "credibility_score": 0.85,
-      "extracted_fields": {
-        "strengths": ["end-to-end planning","vertical fit","demand & replenishment focus"]
+      "Evidence_ID": "PEER-REVIEW-001",
+      "Claim_Support_Tags": [
+        "Customer_Support",
+        "Implementation_Excellence",
+        "Technical_Expertise",
+        "Strategic_Partnership",
+        "Powerful_Engine"
+      ],
+      "Evidence_Quote": "FM delivers a powerful product by an exceptional team. Their project management, technical expertise and general support is excellent. They are our trusted advisor on many matters.",
+      "Source_Details": {
+        "name": "Gartner Peer Insights Review",
+        "type": "Peer Review",
+        "url": "https://www.gartner.com/reviews/market/supply-chain-planning-solutions/vendor/futurmaster/product/bloom-platform/review/view/4988647",
+        "context": "5-star review from a Director of Supply Chain in the Manufacturing industry (Company Size: $1B - $3B USD). Published 24 May 2024."
       },
-      "notes": "Industry media coverage analyzing Gartner MQ context." 
+      "Summary": "A manufacturing supply chain director praises FuturMaster for delivering a powerful product backed by an exceptional team, highlighting their excellence in project management, technical skill, and their role as a trusted strategic advisor."
     },
     {
-      "id": "SCD-2020",
-      "source_name": "Supply Chain Digital – Gartner Recognition (2020)",
-      "source_type": "industry_media",
-      "url": "https://supplychaindigital.com/digital-supply-chain/gartner-study-recognises-futurmaster-advanced-planning-system",
-      "published_date": "2020-05-17",
-      "accessed_date": "2025-09-08",
-      "author": "Supply Chain Digital",
-      "rating": null,
-      "review_count": null,
-      "quote": "positioned as one of the niche players",
-      "summary": "Supply Chain Digital reports that FuturMaster was positioned as a niche player in Gartner’s 2016 MQ, reflecting its innovation and service quality commitment.",
-      "tags": ["innovation","service_quality","APS","niche_player"],
-      "credibility_score": 0.80,
-      "extracted_fields": {
-        "themes": ["innovation","service quality"]
+      "Evidence_ID": "PEER-REVIEW-002",
+      "Claim_Support_Tags": [
+        "Product_Flexibility",
+        "Customization",
+        "Vendor_Relationship",
+        "User_Experience"
+      ],
+      "Evidence_Quote": "High cultural fit, easy to approach and flexible in implementing our specific requirements. The project team is able to quickly understand our challenges and propose adequate solutions.",
+      "Source_Details": {
+        "name": "Gartner Peer Insights Review",
+        "type": "Peer Review",
+        "url": "https://www.gartner.com/reviews/market/supply-chain-planning-solutions/vendor/futurmaster/product/bloom-platform/review/view/5430225",
+        "context": "5-star review from a Supply Chain Manager in the Manufacturing industry (Company Size: $500M - $1B USD). Published 22 Aug 2024."
       },
-      "notes": "Media quoting the vendor’s celebration of MQ placement." 
+      "Summary": "This user highlights FuturMaster's excellent cultural fit and flexibility. The project team is praised for quickly understanding specific business challenges and proposing effective, tailored solutions."
     },
     {
-      "id": "LOKAD-2025",
-      "source_name": "Lokad – Review of FuturMaster",
-      "source_type": "indepth_review",
-      "url": "https://www.lokad.com/review-of-futurmaster-com/",
-      "published_date": "2025-??-??",
-      "accessed_date": "2025-09-08",
-      "author": "Lokad",
-      "rating": null,
-      "review_count": null,
-      "quote": "ambitious, integrated suite aimed at transforming supply chain planning",
-      "summary": "Lokad describes Bloom as an ambitious, integrated suite unifying demand forecasting, procurement and trade promotion planning, though notes technical detail remains high-level.",
-      "tags": ["integrated_planning","digital_twin","forecasting","indepth"],
-      "credibility_score": 0.75,
-      "extracted_fields": {
-        "strengths": ["integrated suite","ambitious vision"],
-        "weaknesses": ["lack of deep technical detail"]
+      "Evidence_ID": "CASE-STUDY-PAULANER",
+      "Claim_Support_Tags": [
+        "Business_Value",
+        "ROI",
+        "Inventory_Optimization",
+        "Forecast_Accuracy",
+        "S&OP_Improvement",
+        "CPG_Food_Beverage"
+      ],
+      "Evidence_Quote": "The FuturMaster solution enabled Paulaner to achieve leaner inventory, better forecast quality for more reliable planning, a robust and integrated S&OP process, and improved cost-to-serve.",
+      "Source_Details": {
+        "name": "Paulaner Brewery Group Case Study",
+        "type": "Case Study",
+        "url": "https://www.futurmaster.com/our-customers/paulaner/",
+        "context": "Success story detailing the implementation and benefits for a major German brewery. Accessed on 2025-09-08."
       },
-      "notes": "Third-party technical review from optimization specialist." 
+      "Summary": "Global brewery Paulaner utilized FuturMaster to achieve significant business outcomes, including optimized inventory levels, higher forecast accuracy, a more robust S&OP cycle, and an overall improved cost-to-serve."
+    },
+    {
+      "Evidence_ID": "PEER-REVIEW-003",
+      "Claim_Support_Tags": [
+        "Ease_of_Use",
+        "User_Experience",
+        "Product_Ergonomics",
+        "Implementation_Excellence"
+      ],
+      "Evidence_Quote": "The ergonomics of the tool are very good and the implementation has been carried out in a very satisfactory way with a team that listens and is very competent.",
+      "Source_Details": {
+        "name": "Gartner Peer Insights Review",
+        "type": "Peer Review",
+        "url": "https://www.gartner.com/reviews/market/supply-chain-planning-solutions/vendor/futurmaster/product/bloom-platform/review/view/4988456",
+        "context": "5-star review from a Supply Chain Manager in the Retail industry (Company Size: $250M - $500M USD). Published 24 May 2024."
+      },
+      "Summary": "A retail supply chain manager commends the FuturMaster platform for its excellent ergonomics and ease of use, while also praising the implementation team for being attentive and highly competent."
+    },
+    {
+      "Evidence_ID": "CASE-STUDY-WABTEC",
+      "Claim_Support_Tags": [
+        "S&OP_Improvement",
+        "Data_Consolidation",
+        "Global_Planning",
+        "Business_Value",
+        "Industrial_Manufacturing"
+      ],
+      "Evidence_Quote": "FuturMaster helped Wabtec Transit centralize and consolidate planning data from multiple sites into a single platform, enabling an effective S&OP process and fostering collaboration between departments.",
+      "Source_Details": {
+        "name": "Wabtec Transit Case Study",
+        "type": "Case Study",
+        "url": "https://www.futurmaster.com/our-customers/wabtec/",
+        "context": "Success story from a leading global provider of equipment and systems for the freight and transit rail industries. Accessed on 2025-09-08."
+      },
+      "Summary": "Global manufacturer Wabtec leveraged FuturMaster to break down data silos, consolidating planning from various sites into one platform. This created a unified S&OP process and significantly improved cross-departmental collaboration."
+    },
+    {
+      "Evidence_ID": "PEER-REVIEW-004",
+      "Claim_Support_Tags": [
+        "Powerful_Engine",
+        "Optimization",
+        "Product_Flexibility",
+        "Problem_Solving"
+      ],
+      "Evidence_Quote": "The optimization engine is really flexible and can adapt to many different business problems. It has helped us to solve many complex planning puzzles.",
+      "Source_Details": {
+        "name": "Gartner Peer Insights Review (PlaniSense)",
+        "type": "Peer Review",
+        "url": "https://www.gartner.com/reviews/market/supply-chain-planning-solutions/vendor/futurmaster/product/planisense/review/view/4596350",
+        "context": "5-star review from a Supply Chain Solution Manager in the Services industry (Company Size: $1B - $3B USD). Published 15 Jan 2024."
+      },
+      "Summary": "A user praises the FuturMaster (PlaniSense) optimization engine for its exceptional flexibility, noting its power to adapt and solve a wide variety of complex business and planning challenges."
     }
   ]
 }
