@@ -263,17 +263,17 @@ export default function Home() {
     setProgressWidth(percentage);
   }, []);
   const [ceremonyStep, setCeremonyStep] = useState(0);
+  const [ceremonyManualMode, setCeremonyManualMode] = useState(false);
   const [reportTitlePosition, setReportTitlePosition] = useState('hidden');
   const [finalTitlePosition, setFinalTitlePosition] = useState(0);
   const titleRef = useRef(null);
   const hiddenTitleRef = useRef(null);
   
-  // Animation state for ceremony
-  const [ceremonyAnimation, setCeremonyAnimation] = useState({
-    titleVisible: false,
-    contentVisible: [] as number[],
-    backgroundTransition: false,
-    fadingOut: false
+  // Fade animation state for ceremony
+  const [ceremonyFade, setCeremonyFade] = useState({
+    isTransitioning: false,
+    isFadingOut: false,
+    backgroundTransition: false
   });
 
   // Cities and industries data
@@ -533,6 +533,27 @@ export default function Home() {
 
 
 
+  // Show mock report
+  const showMockReport = useCallback(() => {
+    showStage('report');
+    setReportTitlePosition('hidden'); // Start hidden
+    
+    // Fade in to center (1.5s)
+    addTimer(() => {
+      setReportTitlePosition('center');
+    }, 100);
+    
+    // Hold at center for 1s, then start uplift (100ms + 1.5s + 1s = 2.6s)
+    addTimer(() => {
+      setReportTitlePosition('top'); // Uplift takes 1.5s
+    }, 2600);
+    
+    // Switch to final positioning after uplift (2.6s + 1.5s = 4.1s)
+    addTimer(() => {
+      setReportTitlePosition('final'); // Content fade in takes 1s
+    }, 4100);
+  }, [showStage, addTimer]);
+
   // Get ceremony paragraphs - dynamic based on generated content or fallback
   const getCeremonyParagraphs = useCallback(() => {
     if (generatedSections.length >= 4) {
@@ -584,6 +605,86 @@ export default function Home() {
     ];
   }, [generatedSections, appState.companyName]);
 
+  // Smooth fade transition function
+  const transitionToSlide = useCallback((targetSlide: number) => {
+    const ceremonyParagraphs = getCeremonyParagraphs();
+    
+    if (targetSlide < 0 || targetSlide >= ceremonyParagraphs.length) return;
+    if (ceremonyFade.isTransitioning) return; // Prevent multiple transitions
+    
+    // Clear any existing timers to prevent conflicts
+    clearAllTimers();
+    
+    // Start fade out
+    setCeremonyFade({
+      isTransitioning: true,
+      isFadingOut: true,
+      backgroundTransition: false
+    });
+    
+    // After fade out completes (0.3s), change content and fade in
+    addTimer(() => {
+      setCeremonyStep(targetSlide);
+      setCeremonyFade(prev => ({
+        ...prev,
+        isFadingOut: false
+      }));
+      
+      // After fade in completes (0.5s), end transition
+      addTimer(() => {
+        setCeremonyFade(prev => ({ ...prev, isTransitioning: false }));
+      }, 500);
+    }, 300);
+  }, [getCeremonyParagraphs, addTimer, ceremonyFade.isTransitioning, clearAllTimers]);
+  
+  const navigateToNextParagraph = useCallback(() => {
+    const ceremonyParagraphs = getCeremonyParagraphs();
+    const nextStep = ceremonyStep + 1;
+    
+    if (nextStep >= ceremonyParagraphs.length) {
+      // Last paragraph, trigger background transition and go to report
+      setCeremonyFade(prev => ({ ...prev, backgroundTransition: true }));
+      addTimer(() => {
+        showMockReport();
+      }, 2000);
+    } else {
+      transitionToSlide(nextStep);
+    }
+  }, [ceremonyStep, getCeremonyParagraphs, transitionToSlide, showMockReport, addTimer]);
+  
+  const navigateToPreviousParagraph = useCallback(() => {
+    const previousStep = ceremonyStep - 1;
+    if (previousStep >= 0) {
+      transitionToSlide(previousStep);
+    }
+  }, [ceremonyStep, transitionToSlide]);
+  
+  const skipToReport = useCallback(() => {
+    // Clear any existing timers to prevent conflicts
+    clearAllTimers();
+    
+    // Start immediate fade out of content
+    setCeremonyFade({
+      isTransitioning: true,
+      isFadingOut: true,
+      backgroundTransition: false
+    });
+    
+    // After content fades out (0.3s), start background transition
+    addTimer(() => {
+      setCeremonyFade(prev => ({ 
+        ...prev, 
+        backgroundTransition: true,
+        isFadingOut: false // Content should be invisible now
+      }));
+      
+      // After background transition (2s), show report
+      addTimer(() => {
+        showMockReport();
+      }, 2000);
+    }, 300);
+  }, [showMockReport, addTimer, clearAllTimers]);
+
   // Ceremony sequence
   const startCeremony = useCallback(() => {
     // Prevent double initialization
@@ -593,103 +694,40 @@ export default function Home() {
     // Clear any existing timers to prevent conflicts
     clearAllTimers();
     showStage('ceremony');
+    setCeremonyManualMode(true);
     
-    // Start with 2-second black screen
+    // Reset ceremony states - start with content invisible
+    setCeremonyStep(0);
+    setCeremonyFade({
+      isTransitioning: true,
+      isFadingOut: false,
+      backgroundTransition: false
+    });
+    
+    // 2-second black screen, then fade in first section
     addTimer(() => {
-      const ceremonyParagraphs = getCeremonyParagraphs();
-      const ceremonySequence = [
-        ...ceremonyParagraphs.map((paragraph, index) => ({
-          duration: 15000, // Changed from 3000ms to 15000ms (15 seconds)
-          background: index % 2 === 0 ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)' : 'linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%)',
-          content: paragraph,
-          step: index
-        }))
-        // 移除额外的黑屏step，直接在最后一个paragraph完成后触发过渡
-      ];
-      
-      let currentStep = 0;
-      
-      const executeStep = () => {
-        if (currentStep >= ceremonySequence.length) {
-          // 所有paragraphs完成，直接触发background过渡到白色并显示report
-          setCeremonyAnimation(prev => ({ ...prev, backgroundTransition: true }));
-          
-          // Show report after transition (blackToWhite动画2秒)
-          addTimer(() => {
-            showMockReport();
-          }, 2000);
-          return;
-        }
-        
-        // Reset animation state for new step - keep fadingOut true during transition gap
-        setCeremonyAnimation({
-          titleVisible: false,
-          contentVisible: [],
-          backgroundTransition: false,
-          fadingOut: true
-        });
-        
-        // Update step and start title fade in (reduced for smoother flow: 500ms → 300ms)
-        addTimer(() => {
-          setCeremonyStep(currentStep);
-          setCeremonyAnimation(prev => ({ ...prev, titleVisible: true, fadingOut: false }));
-        }, 300);
-        
-        // Content paragraphs fade in sequentially (调整: 增加0.8s让标题有足够阅读时间)
-        if (currentStep < ceremonyParagraphs.length) {
-          ceremonyParagraphs[currentStep].content.forEach((_, idx) => {
-            // 递减间隔: 第一段300ms，第二段250ms，第三段200ms，后续180ms
-            const intervals = [300, 250, 200, 180, 180, 180];
-            const baseDelay = 1000; // Reduced from 1700ms to 1000ms for smoother flow
-            
-            // Extend intervals array dynamically for any number of paragraphs
-            const getInterval = (index) => {
-              if (index < intervals.length) return intervals[index];
-              return 180; // Default 180ms for paragraphs beyond the predefined intervals
-            };
-            
-            const accumulatedDelay = Array.from({length: idx}, (_, i) => getInterval(i))
-              .reduce((sum, interval) => sum + interval, 0);
-            
-            addTimer(() => {
-              setCeremonyAnimation(prev => ({
-                ...prev,
-                contentVisible: [...prev.contentVisible, idx]
-              }));
-            }, baseDelay + accumulatedDelay);
-          });
-        }
-        
-        // Start fade out before next step begins (reduced fade out time: 1500ms → 800ms)
-        addTimer(() => {
-          setCeremonyAnimation(prev => ({ ...prev, fadingOut: true }));
-        }, ceremonySequence[currentStep].duration - 800);
-        
-        addTimer(() => {
-          currentStep++;
-          executeStep();
-        }, ceremonySequence[currentStep].duration);
-      };
-      
-      executeStep();
-    }, 2000); // 2-second initial delay
-  }, [getCeremonyParagraphs, addTimer, showStage]);
+      setCeremonyFade({
+        isTransitioning: false,
+        isFadingOut: false,
+        backgroundTransition: false
+      });
+    }, 2000);
+  }, [clearAllTimers, showStage, addTimer]);
 
   // Initialize ceremony when jumping to ceremony stage
   useEffect(() => {
     if (appState.currentStage === 'ceremony') {
-      // Reset ceremony state
-      setCeremonyStep(0);
-      setReportTitlePosition('hidden');
-      setCeremonyAnimation({
-        titleVisible: false,
-        contentVisible: [],
-        backgroundTransition: false,
-        fadingOut: false
-      });
-      
-      // Only start ceremony if not already started (for debug toolbar jumps)
+      // Reset ceremony state only if not already started to avoid conflicts with jumpToStage
       if (!ceremonyStarted) {
+        setCeremonyStep(0);
+        setCeremonyManualMode(false);
+        setReportTitlePosition('hidden');
+        setCeremonyFade({
+          isTransitioning: false,
+          isFadingOut: false,
+          backgroundTransition: false
+        });
+        
         addTimer(() => {
           startCeremony();
         }, 500);
@@ -740,27 +778,6 @@ The choice is simple: become a platform researcher or a market leader.`
       { title: "Why Choose FuturMaster Over Others?", content: mockReport.decision }
     ];
   }, [generatedSections, appState.companyName]);
-
-  // Show mock report
-  const showMockReport = useCallback(() => {
-    showStage('report');
-    setReportTitlePosition('hidden'); // Start hidden
-    
-    // Fade in to center (1.5s)
-    addTimer(() => {
-      setReportTitlePosition('center');
-    }, 100);
-    
-    // Hold at center for 1s, then start uplift (100ms + 1.5s + 1s = 2.6s)
-    addTimer(() => {
-      setReportTitlePosition('top'); // Uplift takes 1.5s
-    }, 2600);
-    
-    // Switch to final positioning after uplift (2.6s + 1.5s = 4.1s)
-    addTimer(() => {
-      setReportTitlePosition('final'); // Content fade in takes 1s
-    }, 4100);
-  }, [showStage, addTimer]);
 
   // Generate report with LLM API call
   const generateReport = useCallback(async () => {
@@ -980,9 +997,31 @@ The choice is simple: become a platform researcher or a market leader.`
     setDebugState(prev => ({ ...prev, currentStage: stage }));
     
     // Initialize animations for direct stage jumps
-    if (stage === 'report') {
+    if (stage === 'ceremony') {
+      setCeremonyStarted(true); // Mark as started to prevent useEffect conflicts
+      setCeremonyStep(0);
+      setCeremonyManualMode(true);
+      setCeremonyFade({
+        isTransitioning: true,
+        isFadingOut: false,
+        backgroundTransition: false
+      });
+      // 2-second black screen, then fade in first section (same as normal flow)
+      addTimer(() => {
+        setCeremonyFade({
+          isTransitioning: false,
+          isFadingOut: false,
+          backgroundTransition: false
+        });
+      }, 2000);
+    } else if (stage === 'report') {
       setReportTitlePosition('hidden');
       addTimer(() => showMockReport(), 100);
+    }
+    
+    // Reset ceremonyStarted when leaving ceremony
+    if (stage !== 'ceremony') {
+      setCeremonyStarted(false);
     }
   }, [clearAllTimers, addTimer, showMockReport]);
 
@@ -1372,74 +1411,148 @@ The choice is simple: become a platform researcher or a market leader.`
             </div>
           )}
 
-          {/* Stage 3: Ceremonial Display */}
+          {/* Stage 3: Ceremonial Display - Fade Mode */}
           {appState.currentStage === 'ceremony' && (
             <div 
               ref={ceremonyRef}
-              className={`w-full h-screen flex items-center justify-center transition-all duration-1000 ${
-                ceremonyAnimation.backgroundTransition ? 'animate-black-to-white' : ''
+              className={`w-full h-screen relative flex items-center justify-center transition-all duration-1000 ${
+                ceremonyFade.backgroundTransition ? 'animate-black-to-white' : ''
               }`}
               style={{ 
-                // 当backgroundTransition活跃时，不设置background，让CSS动画类完全控制
-                background: ceremonyAnimation.backgroundTransition 
+                background: ceremonyFade.backgroundTransition 
                   ? undefined 
-                  : ceremonyStep < getCeremonyParagraphs().length 
-                    ? '#1a1a1a'
-                    : 'linear-gradient(135deg, #000000 0%, #1a1a1a 100%)'
+                  : '#1a1a1a'
               }}>
+              
+              {/* Fade Container */}
               <div className="text-center max-w-4xl mx-auto px-6">
                 {(() => {
                   const ceremonyParagraphs = getCeremonyParagraphs();
-                  return ceremonyStep < ceremonyParagraphs.length && (
-                    <div className="text-white max-w-3xl mx-auto">
+                  if (ceremonyStep >= ceremonyParagraphs.length) return null;
+                  
+                  // Hide content completely during background transition
+                  if (ceremonyFade.backgroundTransition) return null;
+                  
+                  const getFadeAnimation = () => {
+                    if (!ceremonyFade.isTransitioning) return 'animate-smooth-fade-in';
+                    return ceremonyFade.isFadingOut ? 'animate-smooth-fade-out' : '';
+                  };
+                  
+                  // During initial loading (isTransitioning=true, isFadingOut=false), hide content
+                  const shouldShowContent = !ceremonyFade.isTransitioning || ceremonyFade.isFadingOut;
+                  
+                  if (!shouldShowContent) return null;
+                  
+                  return (
+                    <div className={`text-white max-w-3xl mx-auto ${getFadeAnimation()}`}>
                       <h2 
-                        className={`text-4xl md:text-5xl font-bold mb-8 text-center transition-all duration-[800ms] ${
-                          ceremonyAnimation.fadingOut ? 'opacity-0 translate-y-[-20px]' :
-                          ceremonyAnimation.titleVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-12 scale-90'
-                        }`}
+                        className="text-4xl md:text-5xl font-bold mb-8 text-center"
                         style={{ 
                           fontFamily: 'Artifika, serif', 
-                          color: ceremonyStep % 2 === 0 ? '#f79d5c' : '#f3752b',
-                          transitionTimingFunction: 'cubic-bezier(0.23, 0, 0.32, 1)'
+                          color: ceremonyStep % 2 === 0 ? '#f79d5c' : '#f3752b'
                         }}>
                         {ceremonyParagraphs[ceremonyStep].title.replace(/^#{1,6}\s*/, '')}
                       </h2>
                       <div className="text-lg md:text-xl leading-relaxed space-y-4">
                         {ceremonyParagraphs[ceremonyStep].content.map((p, idx) => (
-                        <div 
-                          key={idx} 
-                          className={`mb-4 transition-all duration-[800ms] ${
-                            ceremonyAnimation.fadingOut ? 'opacity-0 translate-y-[-20px] scale-95' :
-                            ceremonyAnimation.contentVisible.includes(idx) 
-                              ? 'opacity-100 translate-y-0 scale-100' 
-                              : 'opacity-0 translate-y-8 scale-98'
-                          }`}
-                          style={{
-                            transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)', // 更柔和的缓动函数
-                            willChange: 'transform, opacity', // 优化性能，防止微位移
-                            backfaceVisibility: 'hidden', // 防止渲染闪烁
-                            perspective: 1000 // 启用3D加速，减少位移问题
-                          }}
-                        >
-                          <ReactMarkdown
-                            components={{
-                              strong: ({ children }) => <strong className="font-semibold text-brand-sandy">{children}</strong>,
-                              ul: ({ children }) => <ul className="list-disc list-inside space-y-1 my-3">{children}</ul>,
-                              ol: ({ children }) => <ol className="list-decimal list-inside space-y-1 my-3">{children}</ol>,
-                              li: ({ children }) => <li className="text-white">{children}</li>,
-                              p: ({ children }) => <p className="mb-3 text-white leading-relaxed">{children}</p>,
-                              blockquote: ({ children }) => <blockquote className="border-l-4 border-brand-sandy pl-4 italic text-white my-4">{children}</blockquote>
-                            }}
-                          >
-                            {p}
-                          </ReactMarkdown>
-                        </div>
+                          <div key={idx} className="mb-4">
+                            <ReactMarkdown
+                              components={{
+                                strong: ({ children }) => <strong className="font-semibold text-brand-sandy">{children}</strong>,
+                                ul: ({ children }) => <ul className="list-disc list-inside space-y-1 my-3">{children}</ul>,
+                                ol: ({ children }) => <ol className="list-decimal list-inside space-y-1 my-3">{children}</ol>,
+                                li: ({ children }) => <li className="text-white">{children}</li>,
+                                p: ({ children }) => <p className="mb-3 text-white leading-relaxed">{children}</p>,
+                                blockquote: ({ children }) => <blockquote className="border-l-4 border-brand-sandy pl-4 italic text-white my-4">{children}</blockquote>
+                              }}
+                            >
+                              {p}
+                            </ReactMarkdown>
+                          </div>
                         ))}
                       </div>
                     </div>
                   );
                 })()}
               </div>
+              
+              {/* Manual Control Bar - Only show in manual mode */}
+              {/* Debug info */}
+              {appState.currentStage === 'ceremony' && (
+                <div className="fixed top-20 right-4 bg-yellow-400 text-black p-2 text-xs z-50">
+                  Manual: {ceremonyManualMode ? 'YES' : 'NO'} | BG: {ceremonyFade.backgroundTransition ? 'YES' : 'NO'} | Fade: {ceremonyFade.isFadingOut ? 'OUT' : 'IN'} | Trans: {ceremonyFade.isTransitioning ? 'YES' : 'NO'}
+                </div>
+              )}
+              {appState.currentStage === 'ceremony' && !ceremonyFade.backgroundTransition && (!ceremonyFade.isTransitioning || ceremonyFade.isFadingOut) && (
+                <div className="fixed bottom-8 left-0 right-0 flex justify-center z-50">
+                  <div className="bg-black/80 backdrop-blur-sm rounded-full px-6 py-3 flex items-center space-x-4 shadow-2xl border border-white/10">
+                    {/* Previous Button */}
+                    <button
+                      onClick={navigateToPreviousParagraph}
+                      disabled={ceremonyStep === 0 || ceremonyFade.isTransitioning}
+                      className={`p-2 rounded-full transition-all duration-200 ${
+                        ceremonyStep === 0 || ceremonyFade.isTransitioning
+                          ? 'text-gray-600 cursor-not-allowed' 
+                          : 'text-white hover:text-brand-sandy hover:bg-white/10'
+                      }`}
+                      title="Previous"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
+                      </svg>
+                    </button>
+                    
+                    {/* Page Indicator */}
+                    <div className="flex space-x-2">
+                      {getCeremonyParagraphs().map((_, index) => (
+                        <div
+                          key={index}
+                          className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                            index === ceremonyStep ? 'bg-brand-sandy' : 'bg-white/30'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    
+                    {/* Next Button */}
+                    <button
+                      onClick={navigateToNextParagraph}
+                      disabled={ceremonyFade.isTransitioning}
+                      className={`p-2 rounded-full transition-all duration-200 ${
+                        ceremonyFade.isTransitioning
+                          ? 'text-gray-600 cursor-not-allowed' 
+                          : 'text-white hover:text-brand-sandy hover:bg-white/10'
+                      }`}
+                      title={ceremonyStep === getCeremonyParagraphs().length - 1 ? "Finish" : "Next"}
+                    >
+                      {ceremonyStep === getCeremonyParagraphs().length - 1 ? (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                      ) : (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                      )}
+                    </button>
+                    
+                    {/* Skip to Report Button */}
+                    <div className="w-px h-6 bg-white/20 mx-2"></div>
+                    <button
+                      onClick={skipToReport}
+                      disabled={ceremonyFade.isTransitioning}
+                      className={`px-3 py-1.5 text-sm font-medium transition-all duration-200 rounded-md ${
+                        ceremonyFade.isTransitioning
+                          ? 'text-gray-600 cursor-not-allowed' 
+                          : 'text-white hover:text-brand-sandy hover:bg-white/10'
+                      }`}
+                      title="Skip to Report"
+                    >
+                      Skip
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
