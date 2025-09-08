@@ -117,6 +117,9 @@ export default function Home() {
   const [llmResponseReceived, setLlmResponseReceived] = useState(false);
   const [upperAnimationMode, setUpperAnimationMode] = useState<'cities' | 'industries'>('cities');
   const [ceremonyStarted, setCeremonyStarted] = useState(false);
+  const [thinkingVisible, setThinkingVisible] = useState(false);
+  const [sectionTitleVisible, setSectionTitleVisible] = useState(true);
+  const [showContactModal, setShowContactModal] = useState(false);
 
   // Direct progress bar update function
   const updateProgressBar = useCallback((percentage: number) => {
@@ -252,11 +255,11 @@ export default function Home() {
   // Thinking steps creation - adjusted for 30-second completion
   const createThinkingSteps = useCallback((companyName: string) => {
     return [
-      { text: `I need to think how can FM help: '${companyName}'. Time to do some digging.`, duration: 6000 },
+      { text: `I need to think how can FM help: '${companyName}'. Time to do some digging.`, duration: 3000 },
       { text: `Searching the web for '${companyName}' supply chain challenges and goal...`, duration: 6000 },
       { text: `Found it! Now I am going to match related FM modules, capacities`, duration: 6000 },
       { text: `Now, let's see who in our success stories matches this client.`, duration: 6000 },
-      { text: `Nice! I found that FM is perfect for this client, let me write down the reports`, duration: 6000 }
+      { text: `Nice! I found that FM is perfect for this client, let me write down the reports`, duration: 15000 }
     ];
   }, []);
 
@@ -311,6 +314,11 @@ export default function Home() {
     setVisibleCities([]);
     setVisibleIndustries([]);
     
+    // Show title for new cycle
+    addTimer(() => {
+      setSectionTitleVisible(true);
+    }, 100);
+    
     // Start cities phase (0-15s)
     addTimer(() => {
       if (!llmResponseReceived) {
@@ -321,18 +329,34 @@ export default function Home() {
     // Switch to industries phase at 15s
     addTimer(() => {
       if (!llmResponseReceived) {
-        setShowWorldwide(false);
-        setShowIndustries(true);
-        setUpperAnimationMode('industries');
-        animateIndustries();
+        // Fade out title first
+        setSectionTitleVisible(false);
+        
+        addTimer(() => {
+          setShowWorldwide(false);
+          setShowIndustries(true);
+          setUpperAnimationMode('industries');
+          
+          // Fade title back in
+          addTimer(() => {
+            setSectionTitleVisible(true);
+          }, 100);
+          
+          animateIndustries();
+        }, 300); // Wait for title fade out
       }
     }, 15000);
     
     // Start next cycle at 30s
     addTimer(() => {
       if (!llmResponseReceived) {
-        setAnimationCycle(prev => prev + 1);
-        startUpperAnimationCycle();
+        // Fade out title before switching back to cities
+        setSectionTitleVisible(false);
+        
+        addTimer(() => {
+          setAnimationCycle(prev => prev + 1);
+          startUpperAnimationCycle();
+        }, 300);
       }
     }, 30000);
   }, [llmResponseReceived, animateCities, animateIndustries, addTimer]);
@@ -361,6 +385,13 @@ export default function Home() {
       setLlmResponseReceived(false);
       setUpperAnimationMode('cities');
       setCeremonyStarted(false);
+      setSectionTitleVisible(true);
+      
+      // Start with thinking hidden, then fade in after 100ms
+      setThinkingVisible(false);
+      addTimer(() => {
+        setThinkingVisible(true);
+      }, 100);
       
       // Start the thinking animation sequence
       addTimer(() => {
@@ -888,6 +919,30 @@ The choice is simple: become a platform researcher or a market leader.`
     setApiError(false);
   }, [clearAllTimers, startStage, testCompany]);
 
+  // Contact modal handlers
+  const handleContactClick = useCallback(() => {
+    setShowContactModal(true);
+  }, []);
+
+  const closeContactModal = useCallback(() => {
+    setShowContactModal(false);
+  }, []);
+
+  const copyPhoneNumber = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText('+65 6224 8239');
+      // Could add a toast notification here if needed
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = '+65 6224 8239';
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen font-sans" style={{ backgroundColor: '#F2F2F2' }}>
       {/* Debug Toolbar - Only show in debug mode */}
@@ -1004,7 +1059,7 @@ The choice is simple: become a platform researcher or a market leader.`
 
           {/* Stage 2: Thinking State Interface */}
           {appState.currentStage === 'thinking' && (
-            <div className="w-full h-screen opacity-100 transition-opacity duration-2000">
+            <div className={`w-full h-screen transition-opacity duration-1000 ${thinkingVisible ? 'opacity-100' : 'opacity-0'}`}>
               {/* Top Half - Global Presence */}
               <div className="h-2/3 flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #F2F2F2 0%, #ffffff 100%)' }}>
                 <div className="text-center max-w-4xl mx-auto px-6">
@@ -1012,19 +1067,20 @@ The choice is simple: become a platform researcher or a market leader.`
                   {/* Cities Section */}
                   {showWorldwide && (
                     <div className="mb-6">
-                      <h2 className="text-xl md:text-2xl font-medium text-brand-text mb-6" style={{ fontFamily: 'Artifika, serif' }}>
+                      <h2 className={`text-xl md:text-2xl font-medium text-brand-text mb-6 transition-opacity duration-500 ${sectionTitleVisible ? 'opacity-100' : 'opacity-0'}`} style={{ fontFamily: 'Artifika, serif' }}>
                         FM is supporting you worldwide, in
                       </h2>
                       <div className="flex justify-center items-center min-h-[160px]">
-                        <div className="flex flex-wrap justify-center gap-6 items-center">
+                        <div className="flex flex-wrap justify-center gap-12 items-center transition-all duration-500 ease-out smooth-flex-reposition">
                           {visibleCities.map((cityIndex) => (
                             <div 
                               key={cityIndex}
-                              className="flex flex-col items-center transition-all duration-500"
+                              className="flex flex-col items-center transition-all duration-700 ease-out"
                               style={{
-                                opacity: 1,
-                                transform: 'scale(1)',
-                                animation: 'cityFadeIn 0.8s ease-out'
+                                opacity: 0,
+                                transform: 'translateY(20px) scale(0.9)',
+                                animation: 'cityFadeIn 0.7s ease-out 0.1s forwards',
+                                transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
                               }}
                             >
                               <div className="mb-3">
@@ -1043,7 +1099,7 @@ The choice is simple: become a platform researcher or a market leader.`
                   {/* Industries Section */}
                   {showIndustries && (
                     <div>
-                      <h2 className="text-xl md:text-2xl font-medium text-brand-text mb-6" style={{ fontFamily: 'Artifika, serif' }}>
+                      <h2 className={`text-xl md:text-2xl font-medium text-brand-text mb-6 transition-opacity duration-500 ${sectionTitleVisible ? 'opacity-100' : 'opacity-0'}`} style={{ fontFamily: 'Artifika, serif' }}>
                         FM powers the world's leading companies in
                       </h2>
                       <div className="flex flex-wrap justify-center gap-3 items-center min-h-[100px]">
@@ -1077,7 +1133,7 @@ The choice is simple: become a platform researcher or a market leader.`
                     <div className="text-center">
                       <div className="flex items-center justify-center space-x-3 mb-3">
                         <span className="text-lg font-medium text-brand-text" style={{ fontFamily: 'Artifika, serif' }}>
-                          FM Sales Assistant is on it — check progress
+                          FM Sales Assistant is on it — expand progress
                         </span>
                         <button 
                           onClick={() => setExpandedThinking(true)}
@@ -1312,7 +1368,7 @@ The choice is simple: become a platform researcher or a market leader.`
                 <div className={`mt-12 flex justify-center space-x-4 transition-opacity duration-[1000ms] ${
                   reportTitlePosition === 'final' ? 'opacity-100' : 'opacity-0'
                 }`}>
-                  <button className="px-8 py-3 bg-gradient-to-r from-brand-sandy to-brand-pumpkin text-white rounded-lg text-lg font-medium hover:shadow-xl hover:scale-[1.02] focus:ring-2 focus:ring-brand-sandy focus:ring-offset-2 transition-all duration-300">
+                  <button onClick={handleContactClick} className="px-8 py-3 bg-gradient-to-r from-brand-sandy to-brand-pumpkin text-white rounded-lg text-lg font-medium hover:shadow-xl hover:scale-[1.02] focus:ring-2 focus:ring-brand-sandy focus:ring-offset-2 transition-all duration-300">
                     Start Your Journey
                   </button>
                   <button onClick={resetApp} className="px-8 py-3 border-2 border-brand-text text-brand-text rounded-lg text-lg font-medium hover:bg-border-text hover:text-white transition-all duration-300">
@@ -1324,6 +1380,42 @@ The choice is simple: become a platform researcher or a market leader.`
           )}
         
       </div>
+
+      {/* Contact Modal */}
+      {showContactModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={closeContactModal}>
+          <div className="bg-white rounded-lg p-8 max-w-md mx-4 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            {/* Close button */}
+            <button 
+              onClick={closeContactModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+              style={{ position: 'absolute', top: '16px', right: '16px' }}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+            
+            {/* Content */}
+            <div className="text-center pt-4">
+              <h3 className="text-2xl font-semibold text-brand-text mb-6" style={{ fontFamily: 'Artifika, serif' }}>
+                Call Vincent !
+              </h3>
+              
+              <div className="mb-6">
+                <button
+                  onClick={copyPhoneNumber}
+                  className="text-3xl font-bold text-brand-pumpkin hover:text-brand-sandy transition-colors duration-200 cursor-pointer"
+                  title="Click to copy phone number"
+                >
+                  +65 6224 8239
+                </button>
+                <p className="text-sm text-gray-500 mt-2">Click to copy</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

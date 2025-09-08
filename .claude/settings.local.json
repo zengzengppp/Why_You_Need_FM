@@ -85,7 +85,9 @@
       "Bash(start http://localhost:3003/?stage=report)",
       "Bash(powershell:*)",
       "Bash(del test-syntax.js)",
-      "Bash(start http://localhost:3003/?stage=ceremony)"
+      "Bash(start http://localhost:3003/?stage=ceremony)",
+      "Bash(mkdir:*)",
+      "Bash(start http://localhost:3003/?stage=thinking)"
     ],
     "deny": [],
     "ask": []

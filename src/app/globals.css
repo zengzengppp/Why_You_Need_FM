@@ -117,15 +117,15 @@ nextjs-portal,
 @keyframes cityFadeIn {
   0% { 
     opacity: 0; 
-    transform: scale(0.95); 
+    transform: translateY(30px) scale(0.8);
   }
-  37.5% { 
+  20% { 
     opacity: 0; 
-    transform: scale(0.95); 
+    transform: translateY(20px) scale(0.85);
   }
   100% { 
     opacity: 1; 
-    transform: scale(1); 
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -138,6 +138,13 @@ nextjs-portal,
     opacity: 1; 
     transform: translateY(0); 
   }
+}
+
+/* Smooth layout transitions for flex children */
+.smooth-flex-reposition > * {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
+              opacity 0.4s ease-out,
+              margin 0.4s ease-out;
 }
 
 .animate-progress { animation: progress 10s ease-in-out; }
