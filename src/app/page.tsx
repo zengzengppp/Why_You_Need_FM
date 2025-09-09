@@ -843,8 +843,16 @@ The choice is simple: become a platform researcher or a market leader.`
         const data = await response.json();
         setGeneratedSections(data.sections);
         
-        if (data.fallback) {
+        // Log API response for debugging
+        console.log('API response data:', {
+          source: data.source,
+          sectionsCount: data.sections?.length,
+          timing: data.timing
+        });
+        
+        if (data.source === 'fallback' || data.source === 'error_fallback') {
           setApiError(true);
+          console.log('Using fallback content due to API limitations');
         }
       } catch (error) {
         console.error('Error calling API:', error);

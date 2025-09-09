@@ -152,22 +152,41 @@ const SALES_CASES_JSON = `[
 ]`;
 
 export async function POST(request: NextRequest) {
+  const requestStart = Date.now();
+  console.log(`[${new Date().toISOString()}] API Generate - Request started`);
+  
   try {
     const { companyName } = await request.json();
+    console.log(`[${new Date().toISOString()}] Company name: ${companyName}`);
     
     if (!companyName) {
+      console.log(`[${new Date().toISOString()}] Error: No company name provided`);
       return NextResponse.json(
         { error: 'Company name is required' },
         { status: 400 }
       );
     }
 
+    // Environment check with detailed logging
+    const apiKey = process.env.GOOGLE_API_KEY;
+    const hasApiKey = !!apiKey;
+    const isDefaultKey = apiKey === 'your-api-key-here';
+    
+    console.log(`[${new Date().toISOString()}] Environment check:`, {
+      hasApiKey,
+      isDefaultKey,
+      keyLength: apiKey ? apiKey.length : 0,
+      nodeEnv: process.env.NODE_ENV,
+      platform: process.env.VERCEL ? 'vercel' : 'local'
+    });
+
     // Check if Google API key is available
-    if (!process.env.GOOGLE_API_KEY || process.env.GOOGLE_API_KEY === 'your-api-key-here') {
-      console.log('Google API key not configured, using fallback');
+    if (!apiKey || isDefaultKey) {
+      console.log(`[${new Date().toISOString()}] Google API key not configured, using fallback content`);
       // Fall through to fallback content below
     } else {
       // LLM CODE - NOW ENABLED FOR PRODUCTION USE
+      console.log(`[${new Date().toISOString()}] Attempting LLM API call...`);
       try {
         // Construct full prompt using embedded content
         const fullPrompt = `${SYSTEM_PROMPT}
@@ -182,28 +201,53 @@ Company Name: ${companyName}
 
 Please analyze this company and provide your two-stage output as specified in the system prompt.`;
 
+        console.log(`[${new Date().toISOString()}] Prompt length: ${fullPrompt.length} characters`);
+
         // Call Gemini API
+        const apiCallStart = Date.now();
         const model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
+        
+        console.log(`[${new Date().toISOString()}] Calling Gemini API...`);
         const result = await model.generateContent(fullPrompt);
         const response = await result.response;
         const text = response.text();
-
-        console.log('LLM Response received:', text.length, 'characters');
+        
+        const apiCallDuration = Date.now() - apiCallStart;
+        console.log(`[${new Date().toISOString()}] LLM Response received: ${text.length} characters in ${apiCallDuration}ms`);
 
         // Parse the response to extract the structured version using improved parser
+        const parseStart = Date.now();
         const sections = parseGeminiResponse(text);
+        const parseDuration = Date.now() - parseStart;
+        
+        console.log(`[${new Date().toISOString()}] Response parsed in ${parseDuration}ms, ${sections.length} sections found`);
+        
+        const totalDuration = Date.now() - requestStart;
+        console.log(`[${new Date().toISOString()}] LLM request completed successfully in ${totalDuration}ms`);
         
         return NextResponse.json({ 
           sections,
-          source: 'llm'
+          source: 'llm',
+          timing: {
+            total: totalDuration,
+            api: apiCallDuration,
+            parsing: parseDuration
+          }
         });
       } catch (llmError) {
-        console.error('LLM API failed, falling back to hardcoded data:', llmError);
+        const errorDuration = Date.now() - requestStart;
+        console.error(`[${new Date().toISOString()}] LLM API failed after ${errorDuration}ms:`, {
+          error: llmError instanceof Error ? llmError.message : 'Unknown error',
+          stack: llmError instanceof Error ? llmError.stack : undefined,
+          name: llmError instanceof Error ? llmError.name : undefined
+        });
         // Fall through to hardcoded output below
       }
     }
 
     // USE HARDCODED OUTPUT FOR FALLBACK
+    console.log(`[${new Date().toISOString()}] Using hardcoded fallback content`);
+    
     // This simulates realistic LLM output with imperfect markdown formatting
     const hardcodedOutput = {
 "section1_title": "## You're Not Building Cars. You're Building a Revolution.",
@@ -219,15 +263,27 @@ Please analyze this company and provide your two-stage output as specified in th
     // Parse using existing parser function to maintain compatibility
     const sections = parseGeminiResponse(JSON.stringify(hardcodedOutput));
     
+    const fallbackDuration = Date.now() - requestStart;
+    console.log(`[${new Date().toISOString()}] Fallback content processed in ${fallbackDuration}ms, returning ${sections.length} sections`);
+    
     return NextResponse.json({ 
       sections,
-      source: 'fallback'
+      source: 'fallback',
+      timing: {
+        total: fallbackDuration
+      }
     });
 
   } catch (error) {
-    console.error('Error generating content:', error);
+    const errorDuration = Date.now() - requestStart;
+    console.error(`[${new Date().toISOString()}] Critical error after ${errorDuration}ms:`, {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined
+    });
     
     // Return fallback mock data
+    console.log(`[${new Date().toISOString()}] Using emergency mock data fallback`);
     const mockSections = [
       {
         title: "Your Forecasts Are Guessing",
