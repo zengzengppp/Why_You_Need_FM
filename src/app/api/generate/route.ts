@@ -1,9 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Initialize Gemini
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || 'your-api-key-here');
-
 // Embedded system prompt (instead of reading from file)
 const SYSTEM_PROMPT = `You are a bold, visionary marketing strategist — channeling the disruptive clarity of Steve Jobs.  
 
@@ -188,6 +185,22 @@ export async function POST(request: NextRequest) {
       // LLM CODE - NOW ENABLED FOR PRODUCTION USE
       console.log(`[${new Date().toISOString()}] Attempting LLM API call...`);
       try {
+        // Initialize SDK inside try-catch to catch initialization errors
+        console.log(`[${new Date().toISOString()}] Initializing GoogleGenerativeAI SDK...`);
+        let genAI;
+        try {
+          genAI = new GoogleGenerativeAI(apiKey);
+          console.log(`[${new Date().toISOString()}] SDK initialized successfully`);
+        } catch (initError) {
+          console.error(`[${new Date().toISOString()}] SDK initialization failed:`, {
+            error: initError instanceof Error ? initError.message : 'Unknown init error',
+            stack: initError instanceof Error ? initError.stack : undefined,
+            apiKeyLength: apiKey ? apiKey.length : 0,
+            apiKeyFormat: apiKey ? `${apiKey.substring(0, 8)}...${apiKey.substring(apiKey.length - 4)}` : 'None'
+          });
+          throw new Error(`GoogleGenerativeAI initialization failed: ${initError instanceof Error ? initError.message : 'Unknown error'}`);
+        }
+
         // Construct full prompt using embedded content
         const fullPrompt = `${SYSTEM_PROMPT}
 
@@ -205,7 +218,17 @@ Please analyze this company and provide your two-stage output as specified in th
 
         // Call Gemini API
         const apiCallStart = Date.now();
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
+        let model;
+        try {
+          model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
+          console.log(`[${new Date().toISOString()}] Model instance created successfully`);
+        } catch (modelError) {
+          console.error(`[${new Date().toISOString()}] Model creation failed:`, {
+            error: modelError instanceof Error ? modelError.message : 'Unknown model error',
+            stack: modelError instanceof Error ? modelError.stack : undefined
+          });
+          throw new Error(`Model creation failed: ${modelError instanceof Error ? modelError.message : 'Unknown error'}`);
+        }
         
         console.log(`[${new Date().toISOString()}] Calling Gemini API...`);
         const result = await model.generateContent(fullPrompt);

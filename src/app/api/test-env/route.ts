@@ -20,9 +20,27 @@ export async function GET(request: NextRequest) {
 
     console.log('Environment check:', envInfo);
 
+    // Test SDK initialization if API key exists
+    let sdkTest = { canInitialize: false, error: null };
+    if (googleApiKey && googleApiKey !== 'your-api-key-here') {
+      try {
+        console.log('Testing GoogleGenerativeAI SDK initialization...');
+        const { GoogleGenerativeAI } = await import('@google/generative-ai');
+        const testGenAI = new GoogleGenerativeAI(googleApiKey);
+        const testModel = testGenAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        
+        sdkTest.canInitialize = true;
+        console.log('SDK initialization test: SUCCESS');
+      } catch (sdkError) {
+        sdkTest.error = sdkError instanceof Error ? sdkError.message : 'Unknown SDK error';
+        console.error('SDK initialization test: FAILED', sdkTest.error);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       environment: envInfo,
+      sdkTest,
       message: googleApiKey 
         ? (googleApiKey === 'your-api-key-here' ? 'API key is set to default value' : 'API key is configured')
         : 'API key is missing'

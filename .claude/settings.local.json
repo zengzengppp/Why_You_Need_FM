@@ -89,7 +89,8 @@
       "Bash(mkdir:*)",
       "Bash(start http://localhost:3003/?stage=thinking)",
       "Bash(del test-json-parsing.js)",
-      "Bash(start http://localhost:3003/test_output)"
+      "Bash(start http://localhost:3003/test_output)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

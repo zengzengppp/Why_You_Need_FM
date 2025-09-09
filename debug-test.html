@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Debug Test</title>
+</head>
+<body>
+    <h1>LLM API Debug Test</h1>
+    <button onclick="testEnv()">Test Environment</button>
+    <button onclick="testLLM()">Test LLM API</button>
+    <div id="results"></div>
+
+    <script>
+        const baseUrl = window.location.origin;
+        
+        async function testEnv() {
+            try {
+                const response = await fetch(`${baseUrl}/api/test-env`);
+                const data = await response.json();
+                document.getElementById('results').innerHTML = '<h2>Environment Test:</h2><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                console.log('Environment test:', data);
+            } catch (error) {
+                console.error('Environment test failed:', error);
+                document.getElementById('results').innerHTML = '<h2>Environment Test Error:</h2>' + error.message;
+            }
+        }
+        
+        async function testLLM() {
+            try {
+                console.log('Starting LLM test...');
+                const response = await fetch(`${baseUrl}/api/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ companyName: 'Tesla' })
+                });
+                
+                console.log('Response status:', response.status);
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                document.getElementById('results').innerHTML = '<h2>LLM Test:</h2><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                console.error('LLM test failed:', error);
+                document.getElementById('results').innerHTML = '<h2>LLM Test Error:</h2>' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
