@@ -193,7 +193,7 @@ export default function Home() {
   const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE === 'true';
   const startStage = process.env.NEXT_PUBLIC_START_STAGE || 'input';
   const animationSpeed = process.env.NEXT_PUBLIC_ANIMATION_SPEED || 'normal';
-  const dataSource = process.env.NEXT_PUBLIC_DATA_SOURCE || 'mock';
+  const dataSource = process.env.NEXT_PUBLIC_DATA_SOURCE || 'llm'; // Default to llm instead of mock
   const skipTransitions = process.env.NEXT_PUBLIC_SKIP_TRANSITIONS === 'true';
   const testCompany = process.env.NEXT_PUBLIC_TEST_COMPANY || '';
 
