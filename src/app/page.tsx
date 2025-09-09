@@ -197,15 +197,8 @@ export default function Home() {
   const testCompany = process.env.NEXT_PUBLIC_TEST_COMPANY || '';
 
 
-  // Animation speed multipliers
-  const getSpeedMultiplier = () => {
-    switch(debugState.animationSpeed) {
-      case 'fast': return 0.1; // 调快5倍：从0.5改为0.1
-      case 'slow': return 2;
-      case 'skip': return 0.01;
-      default: return 1;
-    }
-  };
+  // Animation speed multiplier ref to avoid dependency issues
+  const speedMultiplierRef = useRef(1);
 
   // State management
   const [appState, setAppState] = useState({
@@ -227,6 +220,23 @@ export default function Home() {
     dataSource: dataSource,
     skipTransitions: skipTransitions
   });
+
+  // Update speed multiplier when debug state changes
+  useEffect(() => {
+    switch(debugState.animationSpeed) {
+      case 'fast': 
+        speedMultiplierRef.current = 0.1;
+        break;
+      case 'slow': 
+        speedMultiplierRef.current = 2;
+        break;
+      case 'skip': 
+        speedMultiplierRef.current = 0.01;
+        break;
+      default: 
+        speedMultiplierRef.current = 1;
+    }
+  }, [debugState.animationSpeed]);
 
   // Refs
   const companyNameInputRef = useRef<HTMLInputElement>(null);
@@ -273,7 +283,8 @@ export default function Home() {
   const [ceremonyFade, setCeremonyFade] = useState({
     isTransitioning: false,
     isFadingOut: false,
-    backgroundTransition: false
+    backgroundTransition: false,
+    isGrandEntrance: false
   });
 
   // Cities and industries data
@@ -304,8 +315,7 @@ export default function Home() {
   }, []);
 
   const addTimer = useCallback((callback: () => void, delay: number) => {
-    const speedMultiplier = getSpeedMultiplier();
-    const adjustedDelay = delay * speedMultiplier;
+    const adjustedDelay = delay * speedMultiplierRef.current;
     
     const timerId = setTimeout(() => {
       callback();
@@ -316,7 +326,7 @@ export default function Home() {
     }, adjustedDelay);
     activeTimersRef.current.push(timerId);
     return timerId;
-  }, [debugState.animationSpeed]); // 添加依赖项，确保速度变化时函数会重新创建
+  }, []); // No dependencies to prevent recreation during animations
 
   // URL parameter support and initialization
   useEffect(() => {
@@ -619,7 +629,8 @@ export default function Home() {
     setCeremonyFade({
       isTransitioning: true,
       isFadingOut: true,
-      backgroundTransition: false
+      backgroundTransition: false,
+      isGrandEntrance: false
     });
     
     // After fade out completes (0.3s), change content and fade in
@@ -627,7 +638,8 @@ export default function Home() {
       setCeremonyStep(targetSlide);
       setCeremonyFade(prev => ({
         ...prev,
-        isFadingOut: false
+        isFadingOut: false,
+        isGrandEntrance: false  // Subsequent transitions use regular fade-in
       }));
       
       // After fade in completes (0.5s), end transition
@@ -667,7 +679,8 @@ export default function Home() {
     setCeremonyFade({
       isTransitioning: true,
       isFadingOut: true,
-      backgroundTransition: false
+      backgroundTransition: false,
+      isGrandEntrance: false
     });
     
     // After content fades out (0.3s), start background transition
@@ -675,7 +688,8 @@ export default function Home() {
       setCeremonyFade(prev => ({ 
         ...prev, 
         backgroundTransition: true,
-        isFadingOut: false // Content should be invisible now
+        isFadingOut: false, // Content should be invisible now
+        isGrandEntrance: false
       }));
       
       // After background transition (2s), show report
@@ -701,15 +715,17 @@ export default function Home() {
     setCeremonyFade({
       isTransitioning: true,
       isFadingOut: false,
-      backgroundTransition: false
+      backgroundTransition: false,
+      isGrandEntrance: false
     });
     
-    // 2-second black screen, then fade in first section
+    // 2-second black screen, then grand entrance fade in for first section
     addTimer(() => {
       setCeremonyFade({
         isTransitioning: false,
         isFadingOut: false,
-        backgroundTransition: false
+        backgroundTransition: false,
+        isGrandEntrance: true
       });
     }, 2000);
   }, [clearAllTimers, showStage, addTimer]);
@@ -725,7 +741,8 @@ export default function Home() {
         setCeremonyFade({
           isTransitioning: false,
           isFadingOut: false,
-          backgroundTransition: false
+          backgroundTransition: false,
+          isGrandEntrance: false
         });
         
         addTimer(() => {
@@ -1004,14 +1021,16 @@ The choice is simple: become a platform researcher or a market leader.`
       setCeremonyFade({
         isTransitioning: true,
         isFadingOut: false,
-        backgroundTransition: false
+        backgroundTransition: false,
+        isGrandEntrance: false
       });
-      // 2-second black screen, then fade in first section (same as normal flow)
+      // 2-second black screen, then grand entrance fade in first section (same as normal flow)
       addTimer(() => {
         setCeremonyFade({
           isTransitioning: false,
           isFadingOut: false,
-          backgroundTransition: false
+          backgroundTransition: false,
+          isGrandEntrance: true
         });
       }, 2000);
     } else if (stage === 'report') {
@@ -1057,21 +1076,24 @@ The choice is simple: become a platform researcher or a market leader.`
         showMockReport();
       }, 100);
     } else if (currentStage === 'thinking') {
-      // Reset and restart thinking stage
-      setThinkingSteps([]);
-      setProgressWidth(0);
-      setVisibleCities([]);
-      setVisibleIndustries([]);
-      setShowWorldwide(true);
-      setShowIndustries(false);
-      setAnimationCycle(0);
-      setLlmResponseReceived(false);
-      setUpperAnimationMode('cities');
-      addTimer(() => {
-        animateThinkingSteps();
-      }, 500);
+      // Only restart thinking stage if we're actually on thinking stage
+      // This prevents clearing cities when on other stages
+      if (appState.currentStage === 'thinking') {
+        setThinkingSteps([]);
+        setProgressWidth(0);
+        setVisibleCities([]);
+        setVisibleIndustries([]);
+        setShowWorldwide(true);
+        setShowIndustries(false);
+        setAnimationCycle(0);
+        setLlmResponseReceived(false);
+        setUpperAnimationMode('cities');
+        addTimer(() => {
+          animateThinkingSteps();
+        }, 500);
+      }
     }
-  }, [debugState.animationSpeed, clearAllTimers, appState.currentStage, addTimer, startCeremony, showMockReport, animateThinkingSteps]);
+  }, [clearAllTimers, appState.currentStage, addTimer, startCeremony, showMockReport, animateThinkingSteps]);
 
   const toggleDataSource = useCallback(() => {
     const newSource = debugState.dataSource === 'mock' ? 'llm' : 'mock';
@@ -1142,53 +1164,9 @@ The choice is simple: become a platform researcher or a market leader.`
 
   return (
     <div className="min-h-screen font-sans" style={{ backgroundColor: '#F2F2F2' }}>
-      {/* Debug Toolbar - Only show in debug mode */}
-      {debugMode && (
-        <div className="fixed top-0 left-0 right-0 bg-black/95 text-white p-2 text-xs font-mono shadow-lg border-b border-gray-600" style={{ zIndex: 999999 }}>
-          <div className="flex items-center justify-between max-w-7xl mx-auto">
-            <div className="flex items-center space-x-4">
-              <span className="text-yellow-400">🐛 DEBUG MODE</span>
-              <span>Stage: <strong>{appState.currentStage}</strong></span>
-              <span>Animation: <strong>{debugState.animationSpeed}</strong></span>
-              <span>Data: <strong>{debugState.dataSource}</strong></span>
-              <span>Company: <strong>{appState.companyName || 'None'}</strong></span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <select 
-                value={appState.currentStage} 
-                onChange={(e) => jumpToStage(e.target.value)}
-                className="bg-gray-800 text-white px-2 py-1 rounded text-xs hover:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-yellow-400"
-              >
-                <option value="input">Input</option>
-                <option value="thinking">Thinking</option>
-                <option value="ceremony">Ceremony</option>
-                <option value="report">Report</option>
-              </select>
-              <button 
-                onClick={toggleAnimationSpeed}
-                className="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded text-xs transition-colors duration-150 focus:outline-none focus:ring-1 focus:ring-blue-300"
-              >
-                Speed: {debugState.animationSpeed}
-              </button>
-              <button 
-                onClick={toggleDataSource}
-                className="bg-green-600 hover:bg-green-700 px-2 py-1 rounded text-xs transition-colors duration-150 focus:outline-none focus:ring-1 focus:ring-green-300"
-              >
-                {debugState.dataSource.toUpperCase()}
-              </button>
-              <button 
-                onClick={resetApp}
-                className="bg-red-600 hover:bg-red-700 px-2 py-1 rounded text-xs transition-colors duration-150 focus:outline-none focus:ring-1 focus:ring-red-300"
-              >
-                Reset
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Main Container */}
-      <div id="app" className={`min-h-screen flex items-center justify-center ${debugMode ? 'pt-12' : ''}`}>
+      <div id="app" className="min-h-screen flex items-center justify-center">
           
           {/* Stage 1: Input Interface */}
           {appState.currentStage === 'input' && (
@@ -1434,7 +1412,10 @@ The choice is simple: become a platform researcher or a market leader.`
                   if (ceremonyFade.backgroundTransition) return null;
                   
                   const getFadeAnimation = () => {
-                    if (!ceremonyFade.isTransitioning) return 'animate-smooth-fade-in';
+                    if (!ceremonyFade.isTransitioning) {
+                      // Use grand entrance for first section, smooth fade-in for subsequent ones
+                      return ceremonyFade.isGrandEntrance ? 'animate-ceremony-grand-entrance' : 'animate-smooth-fade-in';
+                    }
                     return ceremonyFade.isFadingOut ? 'animate-smooth-fade-out' : '';
                   };
                   
@@ -1477,12 +1458,6 @@ The choice is simple: become a platform researcher or a market leader.`
               </div>
               
               {/* Manual Control Bar - Only show in manual mode */}
-              {/* Debug info */}
-              {appState.currentStage === 'ceremony' && (
-                <div className="fixed top-20 right-4 bg-yellow-400 text-black p-2 text-xs z-50">
-                  Manual: {ceremonyManualMode ? 'YES' : 'NO'} | BG: {ceremonyFade.backgroundTransition ? 'YES' : 'NO'} | Fade: {ceremonyFade.isFadingOut ? 'OUT' : 'IN'} | Trans: {ceremonyFade.isTransitioning ? 'YES' : 'NO'}
-                </div>
-              )}
               {appState.currentStage === 'ceremony' && !ceremonyFade.backgroundTransition && (!ceremonyFade.isTransitioning || ceremonyFade.isFadingOut) && (
                 <div className="fixed bottom-8 left-0 right-0 flex justify-center z-50">
                   <div className="bg-black/80 backdrop-blur-sm rounded-full px-6 py-3 flex items-center space-x-4 shadow-2xl border border-white/10">

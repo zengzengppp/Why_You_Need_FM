@@ -21,13 +21,9 @@ export async function POST(request: NextRequest) {
     try {
       // Read knowledge base files
       const salesCasesPath = path.join(process.cwd(), 'Sales_Cases_Json.txt');
-      const marketingPath = path.join(process.cwd(), 'Marketing_Json.txt');
-      const competitorPath = path.join(process.cwd(), 'competitor_Fun_Json.txt');
       const systemPromptPath = path.join(process.cwd(), 'System Prompt.txt');
 
       const salesCases = fs.readFileSync(salesCasesPath, 'utf-8');
-      const marketing = fs.readFileSync(marketingPath, 'utf-8');
-      const competitor = fs.readFileSync(competitorPath, 'utf-8');
       const systemPrompt = fs.readFileSync(systemPromptPath, 'utf-8');
 
       // Construct full prompt
@@ -37,12 +33,6 @@ export async function POST(request: NextRequest) {
 
 SALES_CASES_JSON:
 ${salesCases}
-
-MARKETING_JSON:
-${marketing}
-
-COMPETITOR_FUN_JSON:
-${competitor}
 
 === TARGET COMPANY ===
 Company Name: ${companyName}

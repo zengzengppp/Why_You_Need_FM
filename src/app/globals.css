@@ -136,6 +136,29 @@ nextjs-portal,
   }
 }
 
+@keyframes ceremonyGrandEntrance {
+  0% { 
+    opacity: 0; 
+    transform: translateY(40px) scale(0.9);
+    filter: blur(4px);
+  }
+  30% {
+    opacity: 0.3;
+    transform: translateY(25px) scale(0.94);
+    filter: blur(2px);
+  }
+  70% {
+    opacity: 0.8;
+    transform: translateY(8px) scale(0.98);
+    filter: blur(0.5px);
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
 @keyframes cityFadeIn {
   0% { 
     opacity: 0; 
@@ -177,6 +200,7 @@ nextjs-portal,
 .animate-black-to-white { animation: blackToWhite 2s ease-in-out forwards; }
 .animate-smooth-fade-out { animation: smoothFadeOut 0.3s cubic-bezier(0.4, 0, 1, 1) forwards; }
 .animate-smooth-fade-in { animation: smoothFadeIn 0.5s cubic-bezier(0.2, 0, 0.2, 1) forwards; }
+.animate-ceremony-grand-entrance { animation: ceremonyGrandEntrance 2s cubic-bezier(0.2, 0, 0.2, 1) forwards; }
 
 .brand-sandy { color: var(--brand-sandy); }
 .brand-pumpkin { color: var(--brand-pumpkin); }
