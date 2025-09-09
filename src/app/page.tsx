@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
+import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 
 // Smart content splitting that preserves markdown structure
 const smartSplitContent = (content: string) => {
@@ -283,8 +284,7 @@ export default function Home() {
   const [ceremonyFade, setCeremonyFade] = useState({
     isTransitioning: false,
     isFadingOut: false,
-    backgroundTransition: false,
-    isGrandEntrance: false
+    backgroundTransition: false
   });
 
   // Cities and industries data
@@ -629,8 +629,7 @@ export default function Home() {
     setCeremonyFade({
       isTransitioning: true,
       isFadingOut: true,
-      backgroundTransition: false,
-      isGrandEntrance: false
+      backgroundTransition: false
     });
     
     // After fade out completes (0.3s), change content and fade in
@@ -638,8 +637,7 @@ export default function Home() {
       setCeremonyStep(targetSlide);
       setCeremonyFade(prev => ({
         ...prev,
-        isFadingOut: false,
-        isGrandEntrance: false  // Subsequent transitions use regular fade-in
+        isFadingOut: false
       }));
       
       // After fade in completes (0.5s), end transition
@@ -679,8 +677,7 @@ export default function Home() {
     setCeremonyFade({
       isTransitioning: true,
       isFadingOut: true,
-      backgroundTransition: false,
-      isGrandEntrance: false
+      backgroundTransition: false
     });
     
     // After content fades out (0.3s), start background transition
@@ -688,8 +685,7 @@ export default function Home() {
       setCeremonyFade(prev => ({ 
         ...prev, 
         backgroundTransition: true,
-        isFadingOut: false, // Content should be invisible now
-        isGrandEntrance: false
+        isFadingOut: false // Content should be invisible now
       }));
       
       // After background transition (2s), show report
@@ -715,17 +711,15 @@ export default function Home() {
     setCeremonyFade({
       isTransitioning: true,
       isFadingOut: false,
-      backgroundTransition: false,
-      isGrandEntrance: false
+      backgroundTransition: false
     });
     
-    // 2-second black screen, then grand entrance fade in for first section
+    // 2-second black screen, then smooth fade in for first section
     addTimer(() => {
       setCeremonyFade({
         isTransitioning: false,
         isFadingOut: false,
-        backgroundTransition: false,
-        isGrandEntrance: true
+        backgroundTransition: false
       });
     }, 2000);
   }, [clearAllTimers, showStage, addTimer]);
@@ -741,8 +735,7 @@ export default function Home() {
         setCeremonyFade({
           isTransitioning: false,
           isFadingOut: false,
-          backgroundTransition: false,
-          isGrandEntrance: false
+          backgroundTransition: false
         });
         
         addTimer(() => {
@@ -796,16 +789,20 @@ The choice is simple: become a platform researcher or a market leader.`
     ];
   }, [generatedSections, appState.companyName]);
 
+  // State for input value
+  const [inputValue, setInputValue] = useState('');
+
   // Generate report with LLM API call
-  const generateReport = useCallback(async () => {
-    const companyName = companyNameInputRef.current?.value.trim();
+  const generateReport = useCallback(async (companyName?: string) => {
+    // Get value from either parameter, inputValue state, or hidden input ref
+    const company = companyName || inputValue.trim() || companyNameInputRef.current?.value?.trim() || '';
     
-    if (!companyName) {
+    if (!company) {
       alert('Please enter a company name');
       return;
     }
     
-    setAppState(prev => ({ ...prev, companyName }));
+    setAppState(prev => ({ ...prev, companyName: company }));
     setIsGenerating(true);
     setApiError(false);
     setLlmResponseReceived(false);
@@ -873,13 +870,8 @@ The choice is simple: become a platform researcher or a market leader.`
   }, [showStage, addTimer, animateThinkingSteps, startCeremony, debugState.dataSource]);
 
 
-  // Handle key press
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      generateReport();
-    }
-  };
+  // Handle key press - no longer needed with PlaceholdersAndVanishInput
+  // const handleKeyPress function removed as it's handled by the component
 
   // Aggressive cleanup of development elements
   useEffect(() => {
@@ -1021,16 +1013,14 @@ The choice is simple: become a platform researcher or a market leader.`
       setCeremonyFade({
         isTransitioning: true,
         isFadingOut: false,
-        backgroundTransition: false,
-        isGrandEntrance: false
+        backgroundTransition: false
       });
-      // 2-second black screen, then grand entrance fade in first section (same as normal flow)
+      // 2-second black screen, then smooth fade in first section (same as normal flow)
       addTimer(() => {
         setCeremonyFade({
           isTransitioning: false,
           isFadingOut: false,
-          backgroundTransition: false,
-          isGrandEntrance: true
+          backgroundTransition: false
         });
       }, 2000);
     } else if (stage === 'report') {
@@ -1197,25 +1187,37 @@ The choice is simple: become a platform researcher or a market leader.`
               {/* Input Box */}
               <div className="mb-16">
                 <div className="relative max-w-3xl mx-auto">
-                  <div className="flex items-center bg-white rounded-full shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-                    <div className="flex-1 flex items-center px-6 py-4">
-                      <input 
-                        type="text" 
-                        ref={companyNameInputRef}
-                        placeholder="Let's start with your company name..."
-                        className="flex-1 outline-none text-gray-700 text-base bg-transparent"
-                        onKeyPress={handleKeyPress}
-                      />
-                    </div>
-                    <button 
-                      onClick={generateReport}
-                      className="mr-2 p-3 bg-gray-900 text-white rounded-full hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                      </svg>
-                    </button>
-                  </div>
+                  <PlaceholdersAndVanishInput
+                    placeholders={[
+                      "Let's start with your company name...",
+                      "Commençons par le nom de votre entreprise...",
+                      "让我们从您的公司名称开始..."
+                    ]}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setInputValue(value);
+                      if (companyNameInputRef.current) {
+                        companyNameInputRef.current.value = value;
+                      }
+                    }}
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      // Get the input element from the form and extract its value
+                      const form = e.currentTarget;
+                      const input = form.querySelector('input[type="text"]') as HTMLInputElement;
+                      const companyName = input?.value?.trim() || '';
+                      if (companyName) {
+                        generateReport(companyName);
+                      } else {
+                        alert('Please enter a company name');
+                      }
+                    }}
+                  />
+                  {/* Hidden input for ref compatibility */}
+                  <input 
+                    ref={companyNameInputRef}
+                    type="hidden"
+                  />
                 </div>
               </div>
 
@@ -1413,8 +1415,8 @@ The choice is simple: become a platform researcher or a market leader.`
                   
                   const getFadeAnimation = () => {
                     if (!ceremonyFade.isTransitioning) {
-                      // Use grand entrance for first section, smooth fade-in for subsequent ones
-                      return ceremonyFade.isGrandEntrance ? 'animate-ceremony-grand-entrance' : 'animate-smooth-fade-in';
+                      // Use consistent smooth fade-in for all sections
+                      return 'animate-smooth-fade-in';
                     }
                     return ceremonyFade.isFadingOut ? 'animate-smooth-fade-out' : '';
                   };
