@@ -205,10 +205,27 @@ Please analyze this company and provide your two-stage output as specified in th
 
         // Call Gemini API
         const apiCallStart = Date.now();
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
+        // Use faster model for better response time on serverless
+        const model = genAI.getGenerativeModel({ 
+          model: 'gemini-1.5-flash',  // Faster than 2.5-pro
+          generationConfig: {
+            maxOutputTokens: 2048,  // Limit output to speed up response
+          }
+        });
         
-        console.log(`[${new Date().toISOString()}] Calling Gemini API...`);
-        const result = await model.generateContent(fullPrompt);
+        console.log(`[${new Date().toISOString()}] Calling Gemini API with 8s timeout...`);
+        
+        // Create timeout promise for Netlify's 10-second limit
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Gemini API timeout after 8 seconds')), 8000);
+        });
+        
+        // Race the API call against timeout
+        const result = await Promise.race([
+          model.generateContent(fullPrompt),
+          timeoutPromise
+        ]) as any;
+        
         const response = await result.response;
         const text = response.text();
         
