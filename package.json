@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack -p 3003",
-    "build": "next build --turbopack",
+    "build": "next build",
+    "build:production": "next build",
+    "build:turbopack": "next build --turbopack",
     "start": "next start",
     "lint": "eslint"
   },
