@@ -1,10 +1,155 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || 'your-api-key-here');
+
+// Embedded system prompt (instead of reading from file)
+const SYSTEM_PROMPT = `You are a bold, visionary marketing strategist — channeling the disruptive clarity of Steve Jobs.  
+
+1. Search and match stage.
+I will give you a company name normally a FMCG, you need first search its the supply chain pain point/challendge, and according to the following knowledge detail in jsons of my company (Advanced planning system vendor), then you need to choose one case most match (in terms of domain of target company, or pain point/challendge/goal) from Sales_Cases_Json.
+
+2. Output pitch stage
+Your output task is TWO-STAGE:  
+1. **Creative Draft**: First, write a free-form persuasive pitch for a supply chain manager of the target company.  
+   - Be imaginative, emotional, and daring.  
+   - Use stage-like reveals, sharp contrasts, and punchy language.  State pain point, similar cases, FM methodology, competitor (real name) comparaision
+   - IMPORTANT. Use as much as possible related company internal details. So it's based on futurmaster's speciaty, you convince the client.
+   - No structure limits. Just make it feel like a Jobs keynote moment.  
+
+2. **Structured Report**: After finishing the draft, **distill it into a Markdown report** in json with strict rules:  
+   - Exactly 4 sections: The Hook (Bold and catch attention by pinpoint to painpoint), The Parable (Matched cases study), The Solution (How FM help them and you), The Decision (Compared to our competitors vendors).  Use your own title, dont include Hook/Parable in the title. Use story telling structure, so connects the preceding and the following.
+   - Title need to be short and impressive.
+   - Each section should not be too long, around 100 words for reference, not strict.
+   - Use **short punchy paragraphs**, **bullet points**, and **bold emphasis**.  
+   - Output only valid GitHub-flavored Markdown CODE in json (ONLY 4 section titles, and their content, NO pitch_title or others) for the 4 sections, no extra words. Format strictly in : {
+"section1_title": "XXX",
+"section1_content": "XXX",
+"section2_title": "XXX",
+"section2_content": "XXX",
+"section3_title": "XXX",
+"section3_content": "XXX",
+"section4_title": "XXX",
+"section4_content": "XXX",
+}
+For markdown: 1. Use ## for section title.   
+2. Use bullet (-) and numbered (1.) lists.  
+3. Highlight key terms in **bold** or *italic*.  
+4. Add > blockquote for key insights or key quote.   
+
+   - Preserve the Jobs-style boldness from Stage 1.  
+
+⚠️ Important: DON'T OUTPUT DRAFT, its just for your own reference to distill the structured version. ONLY OUTPUT STRUCTURED VERSION and NO CITE OF SOURCES like [cite_start][cite: 1]`;
+
+// Embedded sales cases (instead of reading from file)
+const SALES_CASES_JSON = `[
+  {
+    "Profile": {
+      "Name": "L'Oréal",
+      "Industry": "Beauty & Cosmetics",
+      "Highlight": "The world leader in beauty, 1st cosmetics group worldwide",
+      "Identifiers": ["Luxury Division", "global brands portfolio"],
+      "Scale": ["€32.28B sales (2021)", "85.4k employees", "19.1% operating margin"]
+    },
+    "Context": {
+      "Objective": "Achieve increasing performance & customer service in a volatile world",
+      "Challenges": ["VUCA environment", "Shifting consumer behavior (Covid, inflation)", "Understanding turnover segmentation", "Setting accurate statistical trend"]
+    },
+    "Solution_Impacts": [
+      {
+        "Challenge": "Inaccurate forecasting in volatile market",
+        "Applied_Modules": ["Demand Planning (FuturMaster Bloom)", "Statistical Segmentation", "Automatic Cleansing", "Best Fit Models"],
+        "Outcome": { "metric": "Forecast Accuracy", "value": "Significant improvement by better addressing seasonality & trend" }
+      },
+      {
+        "Challenge": "Managing global scale & complexity",
+        "Applied_Modules": ["Centralized & Country-level forecasting models"],
+        "Outcome": { "metric": "Deployment Scope", "value": ">99% worldwide, 80 countries, 3250 users" }
+      }
+    ],
+    "Key_Tags": {
+      "Challenges": ["VUCA", "Forecast_Accuracy", "Consumer_Behavior", "Global_Scale"],
+      "Solutions": ["Demand_Planning", "FuturMaster_Bloom", "Statistical_Forecasting"],
+      "Outcomes": ["Forecast_Accuracy_Improvement", "Global_Deployment", "Enhanced_Planner_Capabilities"]
+    },
+    "Partnership": {
+      "duration": "20+ years",
+      "type": "Strategic"
+    },
+    "Key_Quote": "Increasing Performance & Customer Service Level in a Volatile World using FuturMaster Bloom. Enhance Demand Planners' Mission...to better serve our end consumers in a volatile world."
+  },
+  {
+    "Profile": {
+      "Name": "Heineken",
+      "Industry": "Beverage (Beer, Cider)",
+      "Highlight": "A diversified global footprint with a winning portfolio of over 300 brands",
+      "Identifiers": ["Premium products focus (>40% revenue)"],
+      "Scale": []
+    },
+    "Context": {
+      "Objective": "Scale S&OP globally and enhance technology to address localized challenges",
+      "Challenges": ["Disparate, non-scalable local solutions", "New IT & business support constraints", "VUCA environment", "Cross-border & cultural complexity"]
+    },
+    "Solution_Impacts": [
+      {
+        "Challenge": "Global S&OP Scalability",
+        "Applied_Modules": ["S&OP FIT Program (SaaS)", "FuturMaster Bloom (AI/ML)", "Regional Planning Excellence Hubs"],
+        "Outcome": { "metric": "Deployment Scope", "value": "27 operating companies in <5 years" }
+      },
+      {
+        "Challenge": "Cross-border Network Optimization",
+        "Applied_Modules": ["Global Optimization Algorithms", "Digital Twin Modeling", "Cross-Border Network Optimization Hub"],
+        "Outcome": { "metric": "Cost Savings", "value": "Delivered cost savings on logistics and production" }
+      }
+    ],
+    "Key_Tags": {
+      "Challenges": ["Global_S&OP", "Scalability", "Legacy_Systems", "VUCA", "Network_Optimization"],
+      "Solutions": ["S&OP", "FuturMaster_Bloom", "SaaS", "AI_ML", "Digital_Twin", "Optimization_Hubs"],
+      "Outcomes": ["Global_Deployment", "Cost_Savings", "Agility_Resilience_Improvement"]
+    },
+    "Partnership": {
+      "duration": "28 years",
+      "type": "Strategic"
+    },
+    "Key_Quote": "Heineken's S&OP FIT Program, powered by FuturMaster, has successfully delivered planning capabilities into 27 operating companies in less than 5 years. FuturMaster Bloom technology enables to leverage complexity. Our Bloom platform enables to thrive in a challenging era."
+  },
+  {
+    "Profile": {
+      "Name": "Sennheiser",
+      "Industry": "Audio (Professional, Consumer, Business)",
+      "Highlight": "Shaping the future of audio and creating unique sound experiences",
+      "Identifiers": ["Global audio company"],
+      "Scale": ["€636.3M turnover (2021)"]
+    },
+    "Context": {
+      "Objective": "Transform Supply Chain Planning for high visibility of customer demand",
+      "Challenges": ["Difficult market for electronic components", "Unsupported legacy SC planning system", "Off-target KPIs (reliability, availability)"]
+    },
+    "Solution_Impacts": [
+      {
+        "Challenge": "Inventory Imbalance & High Costs",
+        "Applied_Modules": ["Distribution Planning Plus", "Demand propagation with priorities", "Freight mode optimization"],
+        "Outcome": { "metric": "Inventory Reduction", "value": "-5% overall, -20% in Sydney/HK" }
+      },
+      {
+        "Challenge": "Unreliable Delivery Promises",
+        "Applied_Modules": ["Available-to-Promise (ATP) across all warehouses", "Production/Purchase Planning (constraint-based)"],
+        "Outcome": { "metric": "Promised Delivery Date Improvement", "value": "+10%" }
+      }
+    ],
+    "Key_Tags": {
+      "Challenges": ["Legacy_Systems", "Inventory_Management", "Component_Shortage", "Service_Level", "Cost_Reduction"],
+      "Solutions": ["Demand_Planning", "Distribution_Planning", "ATP", "Constraint-based_Planning"],
+      "Outcomes": ["Inventory_Reduction", "Cost_Reduction", "Service_Level_Improvement"]
+    },
+    "Partnership": {
+      "duration": "Distribution Planning go-live Feb 2021",
+      "type": "Project-based"
+    },
+    "Key_Quote": "'IT projects need to be: process change + organizational change, supported by software'. 'Supply Chain Planning is not a linear process. It runs in integrated circles, and it is very hard to fully grasp the whole process'. Ultimately, 'At one point in time, you will have to have the courage to make a big jump!'"
+  }
+]`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,44 +162,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // LLM CODE - NOW ENABLED FOR PRODUCTION USE
-    try {
-      // Read knowledge base files
-      const salesCasesPath = path.join(process.cwd(), 'Sales_Cases_Json.txt');
-      const systemPromptPath = path.join(process.cwd(), 'System Prompt.txt');
-
-      const salesCases = fs.readFileSync(salesCasesPath, 'utf-8');
-      const systemPrompt = fs.readFileSync(systemPromptPath, 'utf-8');
-
-      // Construct full prompt
-      const fullPrompt = `${systemPrompt}
+    // Check if Google API key is available
+    if (!process.env.GOOGLE_API_KEY || process.env.GOOGLE_API_KEY === 'your-api-key-here') {
+      console.log('Google API key not configured, using fallback');
+      // Fall through to fallback content below
+    } else {
+      // LLM CODE - NOW ENABLED FOR PRODUCTION USE
+      try {
+        // Construct full prompt using embedded content
+        const fullPrompt = `${SYSTEM_PROMPT}
 
 === KNOWLEDGE BASE ===
 
 SALES_CASES_JSON:
-${salesCases}
+${SALES_CASES_JSON}
 
 === TARGET COMPANY ===
 Company Name: ${companyName}
 
 Please analyze this company and provide your two-stage output as specified in the system prompt.`;
 
-      // Call Gemini API
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
-      const result = await model.generateContent(fullPrompt);
-      const response = await result.response;
-      const text = response.text();
+        // Call Gemini API
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
+        const result = await model.generateContent(fullPrompt);
+        const response = await result.response;
+        const text = response.text();
 
-      // Parse the response to extract the structured version using improved parser
-      const sections = parseGeminiResponse(text);
-      
-      return NextResponse.json({ sections });
-    } catch (llmError) {
-      console.error('LLM API failed, falling back to hardcoded data:', llmError);
-      // Fall through to hardcoded output below
+        console.log('LLM Response received:', text.length, 'characters');
+
+        // Parse the response to extract the structured version using improved parser
+        const sections = parseGeminiResponse(text);
+        
+        return NextResponse.json({ 
+          sections,
+          source: 'llm'
+        });
+      } catch (llmError) {
+        console.error('LLM API failed, falling back to hardcoded data:', llmError);
+        // Fall through to hardcoded output below
+      }
     }
 
-    // USE HARDCODED OUTPUT FROM Example_Output.txt FOR UI TESTING
+    // USE HARDCODED OUTPUT FOR FALLBACK
     // This simulates realistic LLM output with imperfect markdown formatting
     const hardcodedOutput = {
 "section1_title": "## You're Not Building Cars. You're Building a Revolution.",
@@ -65,13 +214,15 @@ Please analyze this company and provide your two-stage output as specified in th
 "section3_content": "We don't sell software. We deliver a strategic command center. The **FuturMaster BLOOM** platform is not just a tool; it's a **digital twin of your entire supply network**, from the cobalt mine to the customer's driveway. \n\nIt's built to turn complexity into your greatest strength through:\n- **Global Optimization Algorithms**: Find the single best plan, not just a feasible one.\n- **Horizontal & Vertical Integration**: Create seamless, connected plans from long-term strategy down to the minute-by-minute factory schedule.\n- **Agility & Resilience**: Simulate scenarios instantly to master disruption and achieve the lowest total cost-to-serve.",
 "section4_title": "## The Obvious Choice: A Commander's Vehicle",
 "section4_content": "Your competitors will offer you two paths to the past.\n\n1.  **o9 Solutions** will sell you a 'Digital Brain'—an expensive academic project that requires a team of data scientists years to 'train'. You're here to win a market, not an academic grant.\n2.  **Kinaxis** will offer you a 'Concurrent Planning' railway track—a rigid, straight path. But your world isn't a simple track; it's a complex, all-terrain battlefield with swamps and mountains.\n\n> The choice is simple: Do you want to be a **researcher** in a lab or a **conductor** on a fixed track? Or do you want to be a **fleet commander**, driving an agile, off-road vehicle designed to conquer the future? "
-}
-;
+};
 
     // Parse using existing parser function to maintain compatibility
     const sections = parseGeminiResponse(JSON.stringify(hardcodedOutput));
     
-    return NextResponse.json({ sections });
+    return NextResponse.json({ 
+      sections,
+      source: 'fallback'
+    });
 
   } catch (error) {
     console.error('Error generating content:', error);
@@ -111,7 +262,7 @@ We give you an **out-of-the-box 'Swiss Army knife'**, sharpened by decades of ex
     
     return NextResponse.json({ 
       sections: mockSections,
-      fallback: true 
+      source: 'error_fallback'
     });
   }
 }
