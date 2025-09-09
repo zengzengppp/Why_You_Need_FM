@@ -40,9 +40,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# test files
+# test files and development-only content
 test-*.js
 markdown-test-cases.js
 src/app/api/test-*
-src/app/test
+src/app/test*
 src/app/test_output
+.playwright-mcp/
+Stage_test.md
