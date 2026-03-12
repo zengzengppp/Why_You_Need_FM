@@ -220,7 +220,7 @@ Please analyze this company and provide your two-stage output as specified in th
         const apiCallStart = Date.now();
         let model;
         try {
-          model = genAI.getGenerativeModel({ model: 'gemini-3-pro-preview' });
+          model = genAI.getGenerativeModel({ model: 'gemini-3.1-pro-preview' });
           console.log(`[${new Date().toISOString()}] Model instance created successfully`);
         } catch (modelError) {
           console.error(`[${new Date().toISOString()}] Model creation failed:`, {
